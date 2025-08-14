@@ -138,3 +138,78 @@ Unhandled error: Error: Not allowed by CORS
 🏢 Multi-tenant:   Enabled
 📊 Version:        1.0.0
 ═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 observe env with Radar: https://dotenvx.com/radar
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+Unhandled error: Error: Not allowed by CORS
+    at origin (/Users/mikeweingarten/Projects/intelliflow/api/server.js:56:23)
+    at /Users/mikeweingarten/Projects/intelliflow/node_modules/cors/lib/index.js:219:13
+    at optionsCallback (/Users/mikeweingarten/Projects/intelliflow/node_modules/cors/lib/index.js:199:9)
+    at corsMiddleware (/Users/mikeweingarten/Projects/intelliflow/node_modules/cors/lib/index.js:204:7)
+    at Layer.handleRequest (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/lib/layer.js:152:17)
+    at trimPrefix (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/index.js:342:13)
+    at /Users/mikeweingarten/Projects/intelliflow/node_modules/router/index.js:297:9
+    at processParams (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/index.js:582:12)
+    at next (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/index.js:291:5)
+    at urlencodedParser (/Users/mikeweingarten/Projects/intelliflow/node_modules/body-parser/lib/types/urlencoded.js:68:7)
+Unhandled error: Error: Not allowed by CORS
+    at origin (/Users/mikeweingarten/Projects/intelliflow/api/server.js:56:23)
+    at /Users/mikeweingarten/Projects/intelliflow/node_modules/cors/lib/index.js:219:13
+    at optionsCallback (/Users/mikeweingarten/Projects/intelliflow/node_modules/cors/lib/index.js:199:9)
+    at corsMiddleware (/Users/mikeweingarten/Projects/intelliflow/node_modules/cors/lib/index.js:204:7)
+    at Layer.handleRequest (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/lib/layer.js:152:17)
+    at trimPrefix (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/index.js:342:13)
+    at /Users/mikeweingarten/Projects/intelliflow/node_modules/router/index.js:297:9
+    at processParams (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/index.js:582:12)
+    at next (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/index.js:291:5)
+    at urlencodedParser (/Users/mikeweingarten/Projects/intelliflow/node_modules/body-parser/lib/types/urlencoded.js:68:7)
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════

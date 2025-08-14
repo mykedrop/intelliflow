@@ -33,7 +33,7 @@
 
   <script>
   async function loadBenchmarks() {
-    const res = await fetch('http://localhost:8000/api/enhanced-assessment/benchmarks', { headers: { 'x-tenant-id': 'default' } });
+    const res = await fetch('http://localhost:8000/api/enhanced-assessment/benchmarks', { headers: { 'x-api-key': 'demo_api_key_12345' } });
     const data = await res.json();
     document.getElementById('benchmarks').textContent = JSON.stringify(data, null, 2);
   }
@@ -50,6 +50,25 @@
       </tr>
     `).join('');
   }
+  // Simple filter UI
+  const title = document.querySelector('h1');
+  const filterBar = document.createElement('div');
+  filterBar.className = 'mb-4';
+  filterBar.innerHTML = '<input id="search" class="border rounded px-3 py-2" placeholder="Search email..." />';
+  title.parentNode.insertBefore(filterBar, title.nextSibling);
+  document.addEventListener('input', (e) => {
+    if (e.target && e.target.id === 'search') {
+      const q = e.target.value.toLowerCase();
+      const rows = Array.from(document.querySelectorAll('#candidates tr'));
+      rows.forEach(tr => {
+        const email = tr.children[1].textContent.toLowerCase();
+        tr.style.display = email.includes(q) ? '' : 'none';
+      });
+    }
+  });
+  // Basic filters example
+  const ws = new WebSocket('ws://localhost:8001');
+  ws.onmessage = () => { loadCandidates(); loadBenchmarks(); };
   loadBenchmarks();
   loadCandidates();
   </script>

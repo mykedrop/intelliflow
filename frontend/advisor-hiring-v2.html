@@ -186,7 +186,7 @@
         else return 'custom_approach';
     }
 
-    const state = { responses: {}, behaviorData: { corrections: 0, hesitations: 0 } };
+    const state = { responses: {}, behaviorData: { corrections: 0, hesitations: 0 }, sessionId: null };
 
     function render(question) {
         const el = document.getElementById('app');
@@ -242,7 +242,22 @@
         render(next);
     }
 
-    render(selectNextQuestion(state.responses, state.behaviorData));
+    async function startSession() {
+        try {
+            const res = await fetch('http://localhost:8000/api/enhanced-assessment/session/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-api-key': 'demo_api_key_12345' },
+                body: JSON.stringify({ assessmentId: 'nm_v2' })
+            });
+            const data = await res.json();
+            state.sessionId = data.sessionId;
+        } catch (e) { console.error('Failed to start session', e); }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        render(selectNextQuestion(state.responses, state.behaviorData));
+        startSession();
+    });
     </script>
 </body>
 </html>

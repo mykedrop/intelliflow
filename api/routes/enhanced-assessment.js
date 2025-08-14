@@ -12,7 +12,10 @@ const BenchmarkEngine = require('../../core/scoring-engine/BenchmarkEngine');
 const behavioralSessions = new Map();
 const benchmarkEngine = new BenchmarkEngine(pool);
 
-router.post('/session/start', async (req, res) => {
+// Require API key auth
+const apiKeyAuth = require('../middleware/auth');
+
+router.post('/session/start', apiKeyAuth, async (req, res) => {
   const { assessmentId } = req.body || {};
   const sessionId = `sess_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const tracker = new DeepBehavioralIntelligence(sessionId);
@@ -20,7 +23,7 @@ router.post('/session/start', async (req, res) => {
   res.json({ sessionId, assessmentId, startTime: Date.now() });
 });
 
-router.post('/session/:sessionId/event', async (req, res) => {
+router.post('/session/:sessionId/event', apiKeyAuth, async (req, res) => {
   const { sessionId } = req.params;
   const { eventType, data } = req.body || {};
   const tracker = behavioralSessions.get(sessionId);
@@ -41,7 +44,7 @@ router.post('/session/:sessionId/event', async (req, res) => {
   res.json({ success: true });
 });
 
-router.post('/submit', async (req, res) => {
+router.post('/submit', apiKeyAuth, async (req, res) => {
   const { sessionId, responses, metadata } = req.body || {};
   const tenantId = req.tenant && req.tenant.id;
   try {
@@ -103,7 +106,7 @@ router.post('/submit', async (req, res) => {
   }
 });
 
-router.get('/benchmarks', async (req, res) => {
+router.get('/benchmarks', apiKeyAuth, async (req, res) => {
   try {
     const distribution = await benchmarkEngine.getDistribution(req.tenant && req.tenant.id);
     const totalCandidates = distribution.reduce((a, b) => a + Number(b.count || 0), 0);
