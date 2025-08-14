@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Northwestern Mutual - Lead Intelligence Assessment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .option-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .option-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+        .option-card.selected {
+            border-color: #2563eb;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+        .progress-step {
+            transition: all 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <span class="text-white font-bold text-xl">NM</span>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">Financial Planning Intelligence</h1>
+                        <p class="text-xs text-gray-500">Powered by OracleBrain</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Completion Time</p>
+                    <p class="text-lg font-mono font-semibold text-gray-900" id="timer">00:00</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="max-w-4xl mx-auto px-6 py-6">
+        <div class="flex items-center justify-between">
+            <div class="flex-1">
+                <div class="flex items-center">
+                    <div id="step-1" class="progress-step flex items-center">
+                        <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">1</div>
+                        <span class="ml-2 text-sm font-medium text-gray-900">Goals</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-gray-200 mx-2"></div>
+                    <div id="step-2" class="progress-step flex items-center">
+                        <div class="w-10 h-10 bg-gray-300 text-white rounded-full flex items-center justify-center font-semibold">2</div>
+                        <span class="ml-2 text-sm font-medium text-gray-500">Situation</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-gray-200 mx-2"></div>
+                    <div id="step-3" class="progress-step flex items-center">
+                        <div class="w-10 h-10 bg-gray-300 text-white rounded-full flex items-center justify-center font-semibold">3</div>
+                        <span class="ml-2 text-sm font-medium text-gray-500">Timeline</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-gray-200 mx-2"></div>
+                    <div id="step-4" class="progress-step flex items-center">
+                        <div class="w-10 h-10 bg-gray-300 text-white rounded-full flex items-center justify-center font-semibold">4</div>
+                        <span class="ml-2 text-sm font-medium text-gray-500">Profile</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-gray-200 mx-2"></div>
+                    <div id="step-5" class="progress-step flex items-center">
+                        <div class="w-10 h-10 bg-gray-300 text-white rounded-full flex items-center justify-center font-semibold">✓</div>
+                        <span class="ml-2 text-sm font-medium text-gray-500">Complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Assessment Container -->
+    <div class="max-w-4xl mx-auto px-6 pb-12">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <!-- Question Container -->
+            <div id="question-container" class="p-8">
+                <!-- Questions will be dynamically loaded here -->
+            </div>
+
+            <!-- Navigation -->
+            <div class="bg-gray-50 px-8 py-6 border-t border-gray-200">
+                <div class="flex justify-between items-center">
+                    <button id="back-btn" onclick="previousQuestion()" class="px-6 py-3 text-gray-600 font-medium hover:text-gray-900 transition hidden">
+                        ← Back
+                    </button>
+                    <div class="flex-1"></div>
+                    <button id="next-btn" onclick="nextQuestion()" class="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition transform hover:scale-105 hidden">
+                        Continue →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Modal -->
+    <div id="results-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div id="results-content" class="p-8">
+                <!-- Results will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Financial Planning Assessment Questions
+        const assessmentQuestions = [
+            // Step 1: Goals
+            {
+                id: 'primary_goal',
+                step: 1,
+                title: "What's your primary financial goal?",
+                subtitle: "Select the area where you'd like to focus",
+                type: 'visual-grid',
+                options: [
+                    { 
+                        value: 'retirement', 
+                        label: 'Retirement Planning', 
+                        icon: '🏖️',
+                        description: 'Secure your future lifestyle'
+                    },
+                    { 
+                        value: 'investment', 
+                        label: 'Investment Growth', 
+                        icon: '📈',
+                        description: 'Build and grow wealth'
+                    },
+                    { 
+                        value: 'protection', 
+                        label: 'Family Protection', 
+                        icon: '🛡️',
+                        description: 'Insurance and security'
+                    },
+                    { 
+                        value: 'tax', 
+                        label: 'Tax Optimization', 
+                        icon: '📊',
+                        description: 'Minimize tax burden'
+                    },
+                    { 
+                        value: 'estate', 
+                        label: 'Estate Planning', 
+                        icon: '🏛️',
+                        description: 'Legacy and wealth transfer'
+                    },
+                    { 
+                        value: 'education', 
+                        label: 'Education Funding', 
+                        icon: '🎓',
+                        description: 'College savings planning'
+                    }
+                ]
+            },
+            {
+                id: 'secondary_goals',
+                step: 1,
+                title: "Any secondary goals?",
+                subtitle: "Select all that apply",
+                type: 'multi-select',
+                options: [
+                    'Debt reduction',
+                    'Emergency fund',
+                    'Major purchase (home, car)',
+                    'Business planning',
+                    'Charitable giving',
+                    'Healthcare costs'
+                ]
+            },
+            // Step 2: Current Situation
+            {
+                id: 'life_stage',
+                step: 2,
+                title: "What's your current life stage?",
+                subtitle: "This helps us understand your planning horizon",
+                type: 'cards',
+                options: [
+                    { value: 'early_career', label: 'Early Career', description: '20s-30s, building foundation' },
+                    { value: 'growing_family', label: 'Growing Family', description: '30s-40s, increasing responsibilities' },
+                    { value: 'peak_earning', label: 'Peak Earning', description: '40s-50s, maximizing accumulation' },
+                    { value: 'pre_retirement', label: 'Pre-Retirement', description: '50s-60s, final preparation' },
+                    { value: 'retirement', label: 'In Retirement', description: '60s+, wealth preservation' }
+                ]
+            },
+            {
+                id: 'income_range',
+                step: 2,
+                title: "Annual household income",
+                subtitle: "This helps determine planning strategies",
+                type: 'income-slider',
+                min: 0,
+                max: 1000000,
+                step: 25000,
+                defaultValue: 100000
+            },
+            {
+                id: 'investable_assets',
+                step: 2,
+                title: "Current investable assets",
+                subtitle: "Including 401(k), savings, investments",
+                type: 'asset-slider',
+                min: 0,
+                max: 10000000,
+                step: 50000,
+                defaultValue: 250000
+            },
+            // Step 3: Timeline & Urgency
+            {
+                id: 'timeline',
+                step: 3,
+                title: "When do you want to address your financial goals?",
+                subtitle: "Your planning timeline",
+                type: 'timeline',
+                options: [
+                    { value: 'immediate', label: 'Immediately', description: 'Ready to start now' },
+                    { value: '3_months', label: 'Within 3 months', description: 'Soon, but need to prepare' },
+                    { value: '6_months', label: 'Within 6 months', description: 'Have time to plan' },
+                    { value: '1_year', label: 'Within a year', description: 'Long-term planning' },
+                    { value: 'exploring', label: 'Just exploring', description: 'Gathering information' }
+                ]
+            },
+            {
+                id: 'advisor_status',
+                step: 3,
+                title: "Do you currently work with a financial advisor?",
+                subtitle: "Your advisory relationship status",
+                type: 'advisor-cards',
+                options: [
+                    { value: 'no_never', label: 'No, never have', icon: '🆕' },
+                    { value: 'no_previous', label: 'No, but have in past', icon: '🔄' },
+                    { value: 'yes_unhappy', label: 'Yes, but considering change', icon: '🤔' },
+                    { value: 'yes_happy', label: 'Yes, and satisfied', icon: '✅' }
+                ]
+            },
+            // Step 4: Profile & Preferences
+            {
+                id: 'risk_tolerance',
+                step: 4,
+                title: "Investment risk tolerance",
+                subtitle: "How do you feel about market volatility?",
+                type: 'risk-scale',
+                options: [
+                    { value: 'conservative', label: 'Conservative', description: 'Preserve capital, minimal risk' },
+                    { value: 'moderate', label: 'Moderate', description: 'Balanced growth and safety' },
+                    { value: 'aggressive', label: 'Aggressive', description: 'Maximum growth potential' }
+                ]
+            },
+            {
+                id: 'decision_style',
+                step: 4,
+                title: "How do you prefer to make financial decisions?",
+                subtitle: "Your decision-making style",
+                type: 'style-cards',
+                options: [
+                    { value: 'delegator', label: 'Delegator', description: 'Prefer expert guidance' },
+                    { value: 'collaborator', label: 'Collaborator', description: 'Work together on decisions' },
+                    { value: 'validator', label: 'Validator', description: 'Seek confirmation of my ideas' },
+                    { value: 'diy', label: 'DIY', description: 'Prefer to manage myself' }
+                ]
+            },
+            // Step 5: Contact
+            {
+                id: 'contact_info',
+                step: 5,
+                title: "Get your personalized financial intelligence report",
+                subtitle: "Your report will be ready immediately",
+                type: 'contact-form',
+                fields: [
+                    { name: 'first_name', label: 'First Name', type: 'text', required: true },
+                    { name: 'last_name', label: 'Last Name', type: 'text', required: true },
+                    { name: 'email', label: 'Email', type: 'email', required: true },
+                    { name: 'phone', label: 'Phone (Optional)', type: 'tel', required: false },
+                    { name: 'state', label: 'State', type: 'select', required: true }
+                ]
+            }
+        ];
+
+        let currentStep = 1;
+        let currentQuestionIndex = 0;
+        let responses = {};
+        let startTime = Date.now();
+        let questionTimings = [];
+        let behavioralData = {
+            mouseMovements: [],
+            hesitations: [],
+            changes: [],
+            scrollDepth: 0,
+            totalTime: 0
+        };
+
+        // Initialize timer
+        setInterval(() => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+            const seconds = (elapsed % 60).toString().padStart(2, '0');
+            document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+        }, 1000);
+
+        function renderQuestion() {
+            const question = assessmentQuestions[currentQuestionIndex];
+            const container = document.getElementById('question-container');
+            
+            let html = `
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-3">${question.title}</h2>
+                    <p class="text-lg text-gray-600">${question.subtitle}</p>
+                </div>
+            `;
+
+            if (question.type === 'visual-grid') {
+                html += '<div class="grid grid-cols-2 md:grid-cols-3 gap-4">';
+                question.options.forEach(opt => {
+                    html += `
+                        <div class="option-card border-2 border-gray-200 rounded-xl p-6 text-center" 
+                             onclick="selectOption('${question.id}', '${opt.value}')" 
+                             data-value="${opt.value}">
+                            <div class="text-4xl mb-3">${opt.icon}</div>
+                            <h3 class="font-semibold text-gray-900 mb-1">${opt.label}</h3>
+                            <p class="text-sm text-gray-500">${opt.description}</p>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else if (question.type === 'multi-select') {
+                html += '<div class="grid grid-cols-2 gap-3">';
+                question.options.forEach(opt => {
+                    html += `
+                        <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition">
+                            <input type="checkbox" class="w-5 h-5 text-blue-600 mr-3" 
+                                   value="${opt}" onchange="handleMultiSelect('${question.id}')">
+                            <span class="text-gray-700">${opt}</span>
+                        </label>
+                    `;
+                });
+                html += '</div>';
+                html += '<p class="text-sm text-gray-500 mt-4">Select all that apply, or click Continue if none</p>';
+            } else if (question.type === 'cards') {
+                html += '<div class="space-y-3">';
+                question.options.forEach(opt => {
+                    html += `
+                        <div class="option-card border-2 border-gray-200 rounded-xl p-5 hover:border-blue-500" 
+                             onclick="selectOption('${question.id}', '${opt.value}')"
+                             data-value="${opt.value}">
+                            <h3 class="font-semibold text-gray-900 mb-1">${opt.label}</h3>
+                            <p class="text-sm text-gray-600">${opt.description}</p>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else if (question.type === 'income-slider' || question.type === 'asset-slider') {
+                const value = responses[question.id] || question.defaultValue;
+                html += `
+                    <div class="py-8">
+                        <div class="mb-8">
+                            <input type="range" id="${question.id}-slider" 
+                                   min="${question.min}" max="${question.max}" 
+                                   step="${question.step}" value="${value}"
+                                   class="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                   oninput="updateSlider('${question.id}', this.value)">
+                        </div>
+                        <div class="text-center">
+                            <p class="text-4xl font-bold text-blue-600" id="${question.id}-display">
+                                $${value.toLocaleString()}
+                            </p>
+                            <p class="text-sm text-gray-500 mt-2">
+                                ${question.type === 'income-slider' ? 'Annual Income' : 'Total Assets'}
+                            </p>
+                        </div>
+                    </div>
+                `;
+                // Auto-show next button for sliders
+                setTimeout(() => {
+                    document.getElementById('next-btn').classList.remove('hidden');
+                }, 100);
+            } else if (question.type === 'timeline') {
+                html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-3">';
+                question.options.forEach(opt => {
+                    html += `
+                        <div class="option-card border-2 border-gray-200 rounded-lg p-4" 
+                             onclick="selectOption('${question.id}', '${opt.value}')"
+                             data-value="${opt.value}">
+                            <h3 class="font-medium text-gray-900">${opt.label}</h3>
+                            <p class="text-sm text-gray-500">${opt.description}</p>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else if (question.type === 'advisor-cards') {
+                html += '<div class="grid grid-cols-2 gap-4">';
+                question.options.forEach(opt => {
+                    html += `
+                        <div class="option-card border-2 border-gray-200 rounded-xl p-6 text-center" 
+                             onclick="selectOption('${question.id}', '${opt.value}')"
+                             data-value="${opt.value}">
+                            <div class="text-3xl mb-2">${opt.icon}</div>
+                            <p class="font-medium text-gray-900">${opt.label}</p>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else if (question.type === 'risk-scale') {
+                html += '<div class="space-y-4">';
+                question.options.forEach(opt => {
+                    html += `
+                        <div class="option-card border-2 border-gray-200 rounded-xl p-5" 
+                             onclick="selectOption('${question.id}', '${opt.value}')"
+                             data-value="${opt.value}">
+                            <h3 class="font-semibold text-gray-900 mb-1">${opt.label}</h3>
+                            <p class="text-sm text-gray-600">${opt.description}</p>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else if (question.type === 'style-cards') {
+                html += '<div class="grid grid-cols-2 gap-4">';
+                question.options.forEach(opt => {
+                    html += `
+                        <div class="option-card border-2 border-gray-200 rounded-lg p-5" 
+                             onclick="selectOption('${question.id}', '${opt.value}')"
+                             data-value="${opt.value}">
+                            <h3 class="font-semibold text-gray-900 mb-1">${opt.label}</h3>
+                            <p class="text-sm text-gray-500">${opt.description}</p>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else if (question.type === 'contact-form') {
+                html += `
+                    <form id="contact-form" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                                <input type="text" name="first_name" required 
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                                <input type="text" name="last_name" required 
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" name="email" required 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone (Optional)</label>
+                            <input type="tel" name="phone" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">State</label>
+                            <select name="state" required 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">Select State</option>
+                                <option value="CA">California</option>
+                                <option value="NY">New York</option>
+                                <option value="TX">Texas</option>
+                                <option value="FL">Florida</option>
+                                <option value="IL">Illinois</option>
+                                <option value="PA">Pennsylvania</option>
+                                <option value="OH">Ohio</option>
+                                <option value="MI">Michigan</option>
+                                <option value="WI">Wisconsin</option>
+                                <!-- Add all states -->
+                            </select>
+                        </div>
+                        <button type="submit" 
+                                class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition">
+                            Get My Intelligence Report
+                        </button>
+                    </form>
+                `;
+                
+                // Add form handler after rendering
+                setTimeout(() => {
+                    document.getElementById('contact-form').addEventListener('submit', handleFormSubmit);
+                }, 100);
+            }
+
+            container.innerHTML = html;
+
+            // Update progress indicators
+            updateProgress();
+
+            // Show/hide navigation
+            document.getElementById('back-btn').classList.toggle('hidden', currentQuestionIndex === 0);
+            
+            // Show next button for multi-select immediately
+            if (question.type === 'multi-select') {
+                document.getElementById('next-btn').classList.remove('hidden');
+            }
+        }
+
+        function updateProgress() {
+            const question = assessmentQuestions[currentQuestionIndex];
+            
+            // Update step indicators
+            for (let i = 1; i <= 5; i++) {
+                const stepEl = document.getElementById(`step-${i}`);
+                const circle = stepEl.querySelector('div');
+                const label = stepEl.querySelector('span');
+                
+                if (i < question.step) {
+                    circle.classList.add('bg-green-600');
+                    circle.classList.remove('bg-blue-600', 'bg-gray-300');
+                    label.classList.add('text-gray-900');
+                    label.classList.remove('text-gray-500');
+                } else if (i === question.step) {
+                    circle.classList.add('bg-blue-600');
+                    circle.classList.remove('bg-green-600', 'bg-gray-300');
+                    label.classList.add('text-gray-900');
+                    label.classList.remove('text-gray-500');
+                } else {
+                    circle.classList.add('bg-gray-300');
+                    circle.classList.remove('bg-green-600', 'bg-blue-600');
+                    label.classList.add('text-gray-500');
+                    label.classList.remove('text-gray-900');
+                }
+            }
+        }
+
+        function selectOption(questionId, value) {
+            responses[questionId] = value;
+            
+            // Track timing
+            questionTimings.push({
+                question: questionId,
+                answer: value,
+                time: Date.now() - startTime
+            });
+
+            // Visual feedback
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+                if (card.dataset.value === value) {
+                    card.classList.add('selected');
+                }
+            });
+
+            // Show next button
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function handleMultiSelect(questionId) {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            const values = Array.from(checkboxes).map(cb => cb.value);
+            responses[questionId] = values;
+            
+            // Always show next button for multi-select
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function updateSlider(questionId, value) {
+            responses[questionId] = parseInt(value);
+            document.getElementById(`${questionId}-display`).textContent = 
+                `$${parseInt(value).toLocaleString()}`;
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < assessmentQuestions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+                document.getElementById('next-btn').classList.add('hidden');
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const contactInfo = {};
+            formData.forEach((value, key) => {
+                contactInfo[key] = value;
+            });
+            
+            responses.contact_info = contactInfo;
+            completeAssessment();
+        }
+
+        function completeAssessment() {
+            behavioralData.totalTime = Date.now() - startTime;
+            
+            // Calculate intelligence scores
+            const scores = calculateScores();
+            
+            // Show results
+            showResults(scores);
+            
+            // Save to backend
+            saveToBackend(scores);
+        }
+
+        function calculateScores() {
+            // Northwestern Mutual Lead Scoring Algorithm
+            const scores = {
+                financialCapacity: calculateFinancialCapacity(),
+                urgency: calculateUrgency(),
+                readiness: calculateReadiness(),
+                advisorFit: calculateAdvisorFit(),
+                lifetimeValue: calculateLifetimeValue()
+            };
+            
+            const totalScore = Object.values(scores).reduce((a, b) => a + b, 0) / Object.keys(scores).length;
+            
+            const tier = totalScore >= 85 ? 'PLATINUM' :
+                        totalScore >= 70 ? 'GOLD' :
+                        totalScore >= 55 ? 'SILVER' :
+                        'BRONZE';
+            
+            return {
+                scores,
+                totalScore: Math.round(totalScore),
+                tier,
+                profile: generateProfile(),
+                recommendations: generateRecommendations(scores, tier),
+                advisorMatch: findBestAdvisor(scores)
+            };
+        }
+
+        function calculateFinancialCapacity() {
+            let score = 30;
+            
+            const income = responses['income_range'] || 0;
+            const assets = responses['investable_assets'] || 0;
+            
+            score += Math.min((income / 10000), 35);
+            score += Math.min((assets / 50000), 35);
+            
+            return Math.min(score, 100);
+        }
+
+        function calculateUrgency() {
+            let score = 50;
+            
+            if (responses.timeline === 'immediate') score = 100;
+            else if (responses.timeline === '3_months') score = 80;
+            else if (responses.timeline === '6_months') score = 60;
+            else if (responses.timeline === '1_year') score = 40;
+            else score = 20;
+            
+            if (responses.advisor_status === 'yes_unhappy') score += 10;
+            
+            return Math.min(score, 100);
+        }
+
+        function calculateReadiness() {
+            let score = 60;
+            
+            if (responses.advisor_status === 'no_never' || responses.advisor_status === 'no_previous') {
+                score += 20;
+            }
+            
+            if (responses.decision_style !== 'diy') {
+                score += 20;
+            }
+            
+            return Math.min(score, 100);
+        }
+
+        function calculateAdvisorFit() {
+            let score = 70;
+            
+            if (responses.decision_style === 'delegator' || responses.decision_style === 'collaborator') {
+                score += 20;
+            }
+            
+            if (responses.life_stage === 'peak_earning' || responses.life_stage === 'pre_retirement') {
+                score += 10;
+            }
+            
+            return Math.min(score, 100);
+        }
+
+        function calculateLifetimeValue() {
+            const income = responses['income_range'] || 0;
+            const assets = responses['investable_assets'] || 0;
+            const age = responses.life_stage;
+            
+            let yearsRemaining = 30;
+            if (age === 'retirement') yearsRemaining = 15;
+            else if (age === 'pre_retirement') yearsRemaining = 20;
+            else if (age === 'peak_earning') yearsRemaining = 25;
+            
+            const potentialAUM = assets + (income * 0.15 * yearsRemaining);
+            const ltv = potentialAUM * 0.01 * yearsRemaining; // 1% fee assumption
+            
+            return Math.min((ltv / 10000), 100);
+        }
+
+        function generateProfile() {
+            return {
+                primaryGoal: responses.primary_goal,
+                lifeStage: responses.life_stage,
+                income: responses.income_range,
+                assets: responses.investable_assets,
+                timeline: responses.timeline,
+                riskTolerance: responses.risk_tolerance,
+                decisionStyle: responses.decision_style
+            };
+        }
+
+        function generateRecommendations(scores, tier) {
+            const recs = [];
+            
+            if (tier === 'PLATINUM' || tier === 'GOLD') {
+                recs.push('Assign to senior advisor immediately');
+                recs.push('Schedule consultation within 48 hours');
+                recs.push('Prepare comprehensive financial plan');
+            } else if (tier === 'SILVER') {
+                recs.push('Assign to mid-level advisor');
+                recs.push('Schedule consultation within 1 week');
+                recs.push('Start with focused solution approach');
+            } else {
+                recs.push('Add to nurture campaign');
+                recs.push('Provide educational content');
+                recs.push('Re-engage in 3-6 months');
+            }
+            
+            return recs;
+        }
+
+        function findBestAdvisor(scores) {
+            // Mock advisor matching logic
+            return {
+                name: 'Sarah Johnson, CFP®',
+                specialty: 'Retirement & Tax Planning',
+                experience: '15 years',
+                clientsLikeYou: 127,
+                successRate: '94%'
+            };
+        }
+
+        function showResults(results) {
+            const modal = document.getElementById('results-modal');
+            const content = document.getElementById('results-content');
+            
+            content.innerHTML = `
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Your Financial Intelligence Report</h2>
+                    <p class="text-gray-600">Personalized insights based on your assessment</p>
+                </div>
+
+                <!-- Overall Score -->
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-white mb-8">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-blue-100 mb-1">Financial Planning Readiness</p>
+                            <p class="text-4xl font-bold">${results.totalScore}/100</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-block px-6 py-3 bg-white/20 rounded-lg text-xl font-semibold">
+                                ${results.tier} TIER
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Score Breakdown -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                    ${Object.entries(results.scores).map(([key, value]) => `
+                        <div class="bg-gray-50 rounded-lg p-4 text-center">
+                            <p class="text-2xl font-bold text-blue-600">${Math.round(value)}%</p>
+                            <p class="text-xs text-gray-600 mt-1">
+                                ${key.replace(/([A-Z])/g, ' $1').trim()}
+                            </p>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- Advisor Match -->
+                <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Recommended Advisor</h3>
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xl font-bold text-gray-900">${results.advisorMatch.name}</p>
+                            <p class="text-gray-600">${results.advisorMatch.specialty}</p>
+                            <p class="text-sm text-gray-500 mt-2">
+                                ${results.advisorMatch.experience} experience • 
+                                ${results.advisorMatch.clientsLikeYou} clients like you
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-green-600">${results.advisorMatch.successRate}</p>
+                            <p class="text-xs text-gray-500">Success Rate</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Next Steps -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Recommended Next Steps</h3>
+                    <div class="space-y-2">
+                        ${results.recommendations.map(rec => `
+                            <div class="flex items-center">
+                                <span class="text-green-500 mr-3">✓</span>
+                                <span class="text-gray-700">${rec}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="scheduleConsultation()" 
+                            class="py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition">
+                        Schedule Consultation
+                    </button>
+                    <button onclick="downloadReport()" 
+                            class="py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition">
+                        Download Report
+                    </button>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function saveToBackend(results) {
+            fetch('http://localhost:8000/api/v1/leads', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': 'demo_api_key_12345'
+                },
+                body: JSON.stringify({
+                    assessment_type: 'financial_planning',
+                    responses,
+                    results,
+                    behavioral_data: behavioralData,
+                    metadata: {
+                        client: 'Northwestern Mutual',
+                        version: '2.0'
+                    }
+                })
+            });
+        }
+
+        function scheduleConsultation() {
+            alert('Opening Northwestern Mutual scheduling portal...');
+        }
+
+        function downloadReport() {
+            alert('Generating PDF report...');
+        }
+
+        // Initialize
+        renderQuestion();
+
+        // Behavioral tracking
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() < 0.05) { // Sample 5% of movements
+                behavioralData.mouseMovements.push({
+                    x: e.clientX,
+                    y: e.clientY,
+                    t: Date.now() - startTime
+                });
+            }
+        });
+
+        // Track scroll depth
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            const height = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrolled / height) * 100;
+            behavioralData.scrollDepth = Math.max(behavioralData.scrollDepth, scrollPercent);
+        });
+    </script>
+</body>
+</html>
+
+

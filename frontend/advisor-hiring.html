@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Northwestern Mutual - Advisor Candidate Assessment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .progress-bar { transition: width 0.5s ease; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+    </style>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.gstatic.com http://localhost:8000; connect-src 'self' http://localhost:8000; font-src https://fonts.gstatic.com data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com;">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b">
+        <div class="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">NM</span>
+                </div>
+                <div>
+                    <h1 class="text-lg font-semibold text-gray-900">Advisor Excellence Assessment</h1>
+                    <p class="text-xs text-gray-500">Powered by OracleBrain Intelligence</p>
+                </div>
+            </div>
+            <div class="text-sm text-gray-500">
+                Time: <span id="timer" class="font-mono">00:00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="bg-white border-b">
+        <div class="max-w-4xl mx-auto px-6 py-2">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-gray-600">Progress</span>
+                <span class="text-xs font-medium text-gray-600"><span id="current-q">1</span> of 8</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+                <div id="progress" class="progress-bar bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full" style="width: 12.5%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-6 py-8">
+        <!-- Question Container -->
+        <div id="question-container" class="bg-white rounded-2xl shadow-xl p-8 mb-6">
+            <!-- Questions will be dynamically inserted here -->
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex justify-between">
+            <button id="prev-btn" onclick="previousQuestion()" class="px-6 py-3 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition hidden">
+                ← Previous
+            </button>
+            <div></div>
+            <button id="next-btn" onclick="nextQuestion()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition hidden">
+                Next →
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Modal (Hidden by default) -->
+    <div id="results-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-8">
+                <h2 class="text-3xl font-bold mb-6 text-gray-900">Candidate Intelligence Report</h2>
+                <div id="results-content">
+                    <!-- Results will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Northwestern Mutual Advisor Assessment Configuration
+        const assessment = {
+            title: "Advisor Excellence Assessment",
+            version: "2.0",
+            questions: [
+                {
+                    id: 'work_style',
+                    text: "How do you prefer to approach your work?",
+                    subtitle: "Select the approach that best describes you",
+                    type: 'grid',
+                    options: [
+                        { value: 'hunter', label: 'Hunter', desc: 'I thrive on finding new opportunities', icon: '🎯' },
+                        { value: 'farmer', label: 'Farmer', desc: 'I excel at nurturing relationships', icon: '🌱' },
+                        { value: 'analyst', label: 'Analyst', desc: 'I focus on data and optimization', icon: '📊' },
+                        { value: 'coach', label: 'Coach', desc: 'I develop and mentor others', icon: '🏆' }
+                    ]
+                },
+                {
+                    id: 'client_approach',
+                    text: "Your ideal client interaction style?",
+                    subtitle: "How do you prefer to engage with clients",
+                    type: 'grid',
+                    options: [
+                        { value: 'educator', label: 'Educator', desc: 'Teaching and informing', icon: '📚' },
+                        { value: 'consultant', label: 'Consultant', desc: 'Advising and strategizing', icon: '💼' },
+                        { value: 'partner', label: 'Partner', desc: 'Collaborating long-term', icon: '🤝' },
+                        { value: 'expert', label: 'Expert', desc: 'Providing specialized solutions', icon: '⭐' }
+                    ]
+                },
+                {
+                    id: 'motivation',
+                    text: "What drives your professional success?",
+                    subtitle: "Select your primary motivator",
+                    type: 'cards',
+                    options: [
+                        { value: 'achievement', label: 'Achievement', desc: 'Hitting and exceeding goals' },
+                        { value: 'recognition', label: 'Recognition', desc: 'Being acknowledged for excellence' },
+                        { value: 'impact', label: 'Impact', desc: 'Making a difference in lives' },
+                        { value: 'growth', label: 'Growth', desc: 'Continuous learning and development' },
+                        { value: 'autonomy', label: 'Autonomy', desc: 'Independence and flexibility' },
+                        { value: 'stability', label: 'Stability', desc: 'Consistent and predictable success' }
+                    ]
+                },
+                {
+                    id: 'strengths',
+                    text: "Select your top 3 professional strengths",
+                    subtitle: "Choose exactly 3 that best represent you",
+                    type: 'multi-select',
+                    maxSelect: 3,
+                    options: [
+                        'Relationship Building', 'Strategic Thinking', 'Communication',
+                        'Problem Solving', 'Leadership', 'Adaptability',
+                        'Persistence', 'Empathy', 'Analytics', 'Innovation',
+                        'Negotiation', 'Time Management'
+                    ]
+                },
+                {
+                    id: 'challenge_response',
+                    text: "When facing a difficult client situation, you typically:",
+                    subtitle: "Your natural response pattern",
+                    type: 'single',
+                    options: [
+                        { value: 'analyze', label: 'Step back and analyze all options systematically' },
+                        { value: 'collaborate', label: 'Seek input from colleagues and mentors' },
+                        { value: 'act', label: 'Trust your instincts and take immediate action' },
+                        { value: 'research', label: 'Gather more data before making a decision' }
+                    ]
+                },
+                {
+                    id: 'learning_style',
+                    text: "How do you prefer to develop new skills?",
+                    subtitle: "Your optimal learning approach",
+                    type: 'visual-cards',
+                    options: [
+                        { value: 'hands-on', label: 'Hands-On', icon: '🛠️', desc: 'Learning by doing' },
+                        { value: 'structured', label: 'Structured', icon: '📖', desc: 'Formal training programs' },
+                        { value: 'peer', label: 'Peer Learning', icon: '👥', desc: 'From colleagues and mentors' },
+                        { value: 'self', label: 'Self-Directed', icon: '🎯', desc: 'Independent research and study' }
+                    ]
+                },
+                {
+                    id: 'values_rank',
+                    text: "Rank these professional values",
+                    subtitle: "Drag to order from most to least important",
+                    type: 'ranking',
+                    options: [
+                        'Client Success',
+                        'Team Collaboration',
+                        'Personal Growth',
+                        'Company Performance',
+                        'Work-Life Balance'
+                    ]
+                },
+                {
+                    id: 'scenario',
+                    text: "A high-value prospect is hesitant about moving forward. What's your approach?",
+                    subtitle: "Choose your primary strategy",
+                    type: 'scenario',
+                    options: [
+                        { value: 'data', label: 'Present compelling data and case studies' },
+                        { value: 'emotion', label: 'Connect on personal goals and fears' },
+                        { value: 'social', label: 'Leverage testimonials and references' },
+                        { value: 'patience', label: 'Give them space while staying engaged' }
+                    ]
+                }
+            ]
+        };
+
+        let currentQuestion = 0;
+        let responses = {};
+        let startTime = Date.now();
+        let questionTimings = [];
+        let behavioralData = {
+            hesitations: [],
+            changes: [],
+            mouseMovements: [],
+            totalTime: 0
+        };
+
+        // Timer
+        setInterval(() => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+            const seconds = (elapsed % 60).toString().padStart(2, '0');
+            document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+        }, 1000);
+
+        function renderQuestion() {
+            const q = assessment.questions[currentQuestion];
+            const container = document.getElementById('question-container');
+            
+            let html = `
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">${q.text}</h2>
+                    <p class="text-gray-600">${q.subtitle}</p>
+                </div>
+            `;
+
+            if (q.type === 'grid') {
+                html += '<div class="grid grid-cols-2 gap-4">';
+                q.options.forEach(opt => {
+                    html += `
+                        <div class="card-hover border-2 border-gray-200 rounded-xl p-6 cursor-pointer hover:border-blue-500" onclick="selectOption('${q.id}', '${opt.value}')">
+                            <div class="text-3xl mb-3">${opt.icon}</div>
+                            <h3 class="font-semibold text-lg mb-1">${opt.label}</h3>
+                            <p class="text-sm text-gray-600">${opt.desc}</p>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else if (q.type === 'cards' || q.type === 'visual-cards') {
+                html += '<div class="grid grid-cols-3 gap-4">';
+                q.options.forEach(opt => {
+                    const icon = opt.icon || '';
+                    html += `
+                        <div class="card-hover border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500" onclick="selectOption('${q.id}', '${opt.value}')">
+                            ${icon ? `<div class="text-2xl mb-2">${icon}</div>` : ''}
+                            <h3 class="font-medium">${opt.label}</h3>
+                            ${opt.desc ? `<p class="text-xs text-gray-600 mt-1">${opt.desc}</p>` : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else if (q.type === 'multi-select') {
+                html += '<div class="grid grid-cols-3 gap-3">';
+                q.options.forEach(opt => {
+                    html += `
+                        <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-blue-50">
+                            <input type="checkbox" class="mr-3" value="${opt}" onchange="handleMultiSelect('${q.id}', this)">
+                            <span>${opt}</span>
+                        </label>
+                    `;
+                });
+                html += '</div>';
+                html += `<p class="text-sm text-gray-500 mt-4">Selected: <span id="select-count">0</span> of ${q.maxSelect}</p>`;
+            } else if (q.type === 'single' || q.type === 'scenario') {
+                html += '<div class="space-y-3">';
+                q.options.forEach(opt => {
+                    html += `
+                        <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50" onclick="selectOption('${q.id}', '${opt.value}')">
+                            <p class="font-medium">${opt.label}</p>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else if (q.type === 'ranking') {
+                html += '<div id="ranking-container" class="space-y-2">';
+                q.options.forEach((opt, idx) => {
+                    html += `
+                        <div class="p-4 bg-gray-50 border-2 border-gray-200 rounded-lg cursor-move" draggable="true" data-value="${opt}">
+                            <span class="text-gray-400 mr-3">${idx + 1}.</span>
+                            ${opt}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                html += '<p class="text-sm text-gray-500 mt-4">Drag to reorder from most to least important</p>';
+            }
+
+            container.innerHTML = html;
+
+            // Initialize drag and drop for ranking
+            if (q.type === 'ranking') {
+                initializeDragAndDrop();
+            }
+
+            // Update progress
+            document.getElementById('current-q').textContent = currentQuestion + 1;
+            document.getElementById('progress').style.width = ((currentQuestion + 1) / assessment.questions.length * 100) + '%';
+
+            // Show/hide navigation
+            document.getElementById('prev-btn').classList.toggle('hidden', currentQuestion === 0);
+        }
+
+        function selectOption(questionId, value) {
+            responses[questionId] = value;
+            
+            // Track timing
+            if (questionTimings[currentQuestion]) {
+                behavioralData.changes.push({
+                    question: questionId,
+                    from: questionTimings[currentQuestion].answer,
+                    to: value,
+                    time: Date.now() - startTime
+                });
+            }
+            
+            questionTimings[currentQuestion] = {
+                question: questionId,
+                answer: value,
+                time: Date.now() - startTime
+            };
+
+            // Visual feedback
+            document.querySelectorAll('.card-hover, [onclick*="selectOption"]').forEach(el => {
+                el.classList.remove('border-blue-500', 'bg-blue-50');
+            });
+            event.currentTarget.classList.add('border-blue-500', 'bg-blue-50');
+
+            // Show next button
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function handleMultiSelect(questionId, checkbox) {
+            const q = assessment.questions[currentQuestion];
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked');
+            
+            if (checked.length > q.maxSelect) {
+                checkbox.checked = false;
+                return;
+            }
+
+            const values = Array.from(checked).map(cb => cb.value);
+            responses[questionId] = values;
+            
+            document.getElementById('select-count').textContent = checked.length;
+            
+            if (checked.length === q.maxSelect) {
+                document.getElementById('next-btn').classList.remove('hidden');
+            }
+        }
+
+        function initializeDragAndDrop() {
+            const container = document.getElementById('ranking-container');
+            const items = container.querySelectorAll('[draggable]');
+            
+            items.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragover', handleDragOver);
+                item.addEventListener('drop', handleDrop);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            // Auto-save ranking
+            saveRanking();
+        }
+
+        let draggedElement = null;
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.style.opacity = '0.4';
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            return false;
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            if (draggedElement !== this) {
+                const container = document.getElementById('ranking-container');
+                const allItems = Array.from(container.children);
+                const draggedIndex = allItems.indexOf(draggedElement);
+                const targetIndex = allItems.indexOf(this);
+                
+                if (draggedIndex < targetIndex) {
+                    this.parentNode.insertBefore(draggedElement, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedElement, this);
+                }
+            }
+            
+            saveRanking();
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.style.opacity = '';
+            saveRanking();
+        }
+
+        function saveRanking() {
+            const container = document.getElementById('ranking-container');
+            const items = container.querySelectorAll('[draggable]');
+            const ranking = Array.from(items).map(item => item.dataset.value);
+            
+            const q = assessment.questions[currentQuestion];
+            responses[q.id] = ranking;
+            
+            // Update numbers
+            items.forEach((item, idx) => {
+                const span = item.querySelector('span');
+                span.textContent = `${idx + 1}.`;
+            });
+            
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < assessment.questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+                document.getElementById('next-btn').classList.add('hidden');
+            } else {
+                completeAssessment();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function completeAssessment() {
+            behavioralData.totalTime = Date.now() - startTime;
+            
+            // Calculate results
+            const results = calculateResults();
+            
+            // Show results
+            showResults(results);
+        }
+
+        function calculateResults() {
+            // Northwestern Mutual specific scoring algorithm
+            const profile = {
+                // Work Style Analysis
+                workStyle: responses.work_style,
+                isHunter: responses.work_style === 'hunter',
+                isFarmer: responses.work_style === 'farmer',
+                
+                // Client Approach
+                clientApproach: responses.client_approach,
+                
+                // Motivation Factors
+                primaryMotivation: responses.motivation,
+                isAchievementDriven: responses.motivation === 'achievement',
+                isImpactDriven: responses.motivation === 'impact',
+                
+                // Strengths
+                topStrengths: responses.strengths || [],
+                hasLeadership: responses.strengths?.includes('Leadership'),
+                hasRelationships: responses.strengths?.includes('Relationship Building'),
+                
+                // Challenge Response
+                problemSolving: responses.challenge_response,
+                
+                // Learning Style
+                learningPreference: responses.learning_style,
+                
+                // Values
+                topValue: responses.values_rank?.[0] || 'Client Success',
+                valuesAlignment: calculateValuesScore(responses.values_rank),
+                
+                // Scenario Response
+                salesApproach: responses.scenario
+            };
+
+            // Calculate fit scores
+            const scores = {
+                culturalFit: calculateCulturalFit(profile),
+                salesPotential: calculateSalesPotential(profile),
+                leadershipPotential: calculateLeadershipPotential(profile),
+                retentionLikelihood: calculateRetentionLikelihood(profile),
+                coachability: calculateCoachability(profile)
+            };
+
+            // Generate tier
+            const totalScore = Object.values(scores).reduce((a, b) => a + b, 0) / Object.keys(scores).length;
+            const tier = totalScore >= 85 ? 'ELITE' :
+                        totalScore >= 70 ? 'HIGH_POTENTIAL' :
+                        totalScore >= 55 ? 'SOLID' :
+                        totalScore >= 40 ? 'DEVELOPING' : 'NEEDS_SUPPORT';
+
+            return {
+                profile,
+                scores,
+                totalScore: Math.round(totalScore),
+                tier,
+                recommendations: generateRecommendations(profile, scores),
+                strengths: identifyStrengths(profile, scores),
+                developmentAreas: identifyDevelopmentAreas(profile, scores),
+                managerNotes: generateManagerNotes(profile, scores, tier)
+            };
+        }
+
+        function calculateCulturalFit(profile) {
+            let score = 60; // Base score
+            
+            // Northwestern Mutual values client success and impact
+            if (profile.topValue === 'Client Success') score += 20;
+            if (profile.isImpactDriven) score += 15;
+            if (profile.hasRelationships) score += 10;
+            if (profile.clientApproach === 'partner' || profile.clientApproach === 'consultant') score += 10;
+            
+            return Math.min(score, 100);
+        }
+
+        function calculateSalesPotential(profile) {
+            let score = 50;
+            
+            if (profile.isHunter) score += 20;
+            if (profile.isAchievementDriven) score += 15;
+            if (profile.topStrengths.includes('Negotiation')) score += 15;
+            if (profile.topStrengths.includes('Communication')) score += 10;
+            if (profile.topStrengths.includes('Persistence')) score += 15;
+            if (profile.salesApproach === 'emotion' || profile.salesApproach === 'data') score += 10;
+            
+            return Math.min(score, 100);
+        }
+
+        function calculateLeadershipPotential(profile) {
+            let score = 40;
+            
+            if (profile.hasLeadership) score += 25;
+            if (profile.workStyle === 'coach') score += 20;
+            if (profile.topStrengths.includes('Strategic Thinking')) score += 15;
+            if (profile.primaryMotivation === 'growth' || profile.primaryMotivation === 'impact') score += 15;
+            if (profile.problemSolving === 'collaborate') score += 10;
+            
+            return Math.min(score, 100);
+        }
+
+        function calculateRetentionLikelihood(profile) {
+            let score = 60;
+            
+            if (profile.primaryMotivation === 'stability') score += 20;
+            if (profile.primaryMotivation === 'growth') score += 15;
+            if (profile.valuesAlignment > 70) score += 15;
+            if (profile.isFarmer) score += 10; // Farmers tend to stay longer
+            if (profile.learningPreference === 'structured') score += 10;
+            
+            return Math.min(score, 100);
+        }
+
+        function calculateCoachability(profile) {
+            let score = 50;
+            
+            if (profile.learningPreference === 'structured' || profile.learningPreference === 'peer') score += 20;
+            if (profile.problemSolving === 'collaborate') score += 15;
+            if (profile.primaryMotivation === 'growth') score += 20;
+            if (profile.topStrengths.includes('Adaptability')) score += 15;
+            
+            return Math.min(score, 100);
+        }
+
+        function calculateValuesScore(ranking) {
+            if (!ranking) return 50;
+            
+            // Northwestern Mutual ideal ranking
+            const ideal = ['Client Success', 'Company Performance', 'Personal Growth', 'Team Collaboration', 'Work-Life Balance'];
+            
+            let score = 100;
+            ranking.forEach((value, index) => {
+                const idealIndex = ideal.indexOf(value);
+                const difference = Math.abs(index - idealIndex);
+                score -= difference * 5;
+            });
+            
+            return Math.max(score, 0);
+        }
+
+        function generateRecommendations(profile, scores) {
+            const recs = [];
+            
+            if (scores.salesPotential >= 80) {
+                recs.push("Fast-track for advanced sales training");
+                recs.push("Assign high-value prospect list immediately");
+            }
+            
+            if (scores.leadershipPotential >= 75) {
+                recs.push("Include in leadership development program");
+                recs.push("Consider for team lead role within 12-18 months");
+            }
+            
+            if (scores.coachability >= 70) {
+                recs.push("Pair with senior mentor for accelerated development");
+            }
+            
+            if (profile.isHunter) {
+                recs.push("Focus on new business development territories");
+            } else if (profile.isFarmer) {
+                recs.push("Assign existing book of business for growth");
+            }
+            
+            if (scores.retentionLikelihood < 60) {
+                recs.push("Schedule regular check-ins to ensure engagement");
+                recs.push("Clarify growth path and opportunities early");
+            }
+            
+            return recs;
+        }
+
+        function identifyStrengths(profile, scores) {
+            const strengths = [];
+            
+            if (scores.salesPotential >= 70) strengths.push("Strong sales aptitude");
+            if (scores.culturalFit >= 80) strengths.push("Excellent cultural alignment");
+            if (scores.leadershipPotential >= 70) strengths.push("Natural leadership qualities");
+            if (profile.hasRelationships) strengths.push("Relationship-building focus");
+            if (profile.isAchievementDriven) strengths.push("Results-oriented mindset");
+            
+            return strengths;
+        }
+
+        function identifyDevelopmentAreas(profile, scores) {
+            const areas = [];
+            
+            if (scores.salesPotential < 60) areas.push("Sales technique refinement");
+            if (!profile.topStrengths.includes('Communication')) areas.push("Communication skills");
+            if (scores.coachability < 50) areas.push("Openness to feedback");
+            if (!profile.topStrengths.includes('Time Management')) areas.push("Time management and prioritization");
+            
+            return areas;
+        }
+
+        function generateManagerNotes(profile, scores, tier) {
+            let notes = `Candidate shows ${tier.replace('_', ' ').toLowerCase()} potential. `;
+            
+            if (tier === 'ELITE' || tier === 'HIGH_POTENTIAL') {
+                notes += "Strong candidate for immediate hire with accelerated development path. ";
+            }
+            
+            if (profile.isHunter && scores.salesPotential >= 70) {
+                notes += "Natural hunter mentality will drive new business acquisition. ";
+            }
+            
+            if (scores.retentionLikelihood < 60) {
+                notes += "Monitor engagement closely in first 90 days. ";
+            }
+            
+            if (scores.leadershipPotential >= 75) {
+                notes += "Consider for leadership track after initial success. ";
+            }
+            
+            return notes;
+        }
+
+        function showResults(results) {
+            const modal = document.getElementById('results-modal');
+            const content = document.getElementById('results-content');
+            
+            // Candidate sees only a thank you message
+            content.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Thank You!</h2>
+                    
+                    <p class="text-lg text-gray-600 mb-6">
+                        We've received your assessment and appreciate you taking the time to complete it.
+                    </p>
+                    
+                    <div class="bg-blue-50 rounded-lg p-6 mb-8 max-w-md mx-auto">
+                        <p class="text-gray-700">
+                            A member of our hiring team will review your responses and 
+                            reach out within <strong>24-48 hours</strong> to discuss next steps.
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-3 text-left max-w-md mx-auto">
+                        <p class="text-sm text-gray-600">
+                            <strong>What happens next:</strong>
+                        </p>
+                        <div class="flex items-start">
+                            <span class="text-blue-500 mr-2">1.</span>
+                            <span class="text-sm text-gray-600">Your assessment will be reviewed by our hiring team</span>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-blue-500 mr-2">2.</span>
+                            <span class="text-sm text-gray-600">We'll match you with the right opportunity</span>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-blue-500 mr-2">3.</span>
+                            <span class="text-sm text-gray-600">You'll receive a call or email to schedule an interview</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <button onclick="window.location.href='https://northwesternmutual.com'" 
+                                class="px-8 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+                            Return to Northwestern Mutual
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            
+            // Save to backend (results go to recruiting dashboard, not shown to candidate)
+            saveResults(results);
+        }
+
+        function saveResults(results) {
+            // Send to OracleBrain API
+            fetch('http://localhost:8000/api/v1/leads', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': 'demo_api_key_12345' // Northwestern Mutual's API key
+                },
+                body: JSON.stringify({
+                    assessment_type: 'advisor_hiring',
+                    responses,
+                    results,
+                    behavioral_data: behavioralData,
+                    metadata: {
+                        version: assessment.version,
+                        completion_time: behavioralData.totalTime,
+                        client: 'Northwestern Mutual'
+                    }
+                })
+            }).catch(() => {});
+        }
+
+        function downloadReport() {
+            // Generate PDF report
+            alert('Generating PDF report... (This would download a professional PDF with all results and insights)');
+        }
+
+        function shareResults() {
+            // Share via email/Slack
+            alert('Sharing results with hiring team... (This would send to configured team members)');
+        }
+
+        // Initialize
+        renderQuestion();
+
+        // Track mouse movements for behavioral analysis
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() < 0.1) { // Sample 10% of movements
+                behavioralData.mouseMovements.push({
+                    x: e.clientX,
+                    y: e.clientY,
+                    t: Date.now() - startTime
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
+

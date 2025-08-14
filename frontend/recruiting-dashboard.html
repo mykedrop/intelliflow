@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Northwestern Mutual - Recruiting Intelligence Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .candidate-card { transition: all 0.3s ease; }
+        .candidate-card:hover { transform: translateX(4px); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold">NM</span>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">Recruiting Intelligence Dashboard</h1>
+                        <p class="text-sm text-gray-500">Advisor Candidate Pipeline</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Stats -->
+                    <div class="text-center px-4 border-r">
+                        <p class="text-2xl font-bold text-gray-900" id="total-candidates">0</p>
+                        <p class="text-xs text-gray-500">Total Candidates</p>
+                    </div>
+                    <div class="text-center px-4 border-r">
+                        <p class="text-2xl font-bold text-green-600" id="qualified-count">0</p>
+                        <p class="text-xs text-gray-500">Qualified</p>
+                    </div>
+                    <div class="text-center px-4">
+                        <p class="text-2xl font-bold text-blue-600" id="today-count">0</p>
+                        <p class="text-xs text-gray-500">Today</p>
+                    </div>
+                    <!-- User Menu -->
+                    <div class="flex items-center space-x-3 pl-4">
+                        <img src="https://ui-avatars.com/api/?name=Hiring+Manager&background=3b82f6&color=fff" 
+                             class="w-8 h-8 rounded-full">
+                        <span class="text-sm font-medium text-gray-700">Hiring Manager</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="flex h-screen pt-16">
+        <!-- Sidebar Filters -->
+        <div class="w-80 bg-white border-r border-gray-200 overflow-y-auto">
+            <div class="p-6">
+                <h2 class="text-sm font-semibold text-gray-900 mb-4">FILTERS</h2>
+                
+                <!-- Search -->
+                <div class="mb-6">
+                    <input type="text" placeholder="Search candidates..." 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm">
+                </div>
+
+                <!-- Tier Filter -->
+                <div class="mb-6">
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Candidate Tier</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" value="ELITE" onchange="filterCandidates()">
+                            <span class="text-sm">Elite</span>
+                            <span class="ml-auto text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">0</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" value="HIGH_POTENTIAL" onchange="filterCandidates()">
+                            <span class="text-sm">High Potential</span>
+                            <span class="ml-auto text-xs bg-green-100 text-green-800 px-2 py-1 rounded">0</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" value="SOLID" onchange="filterCandidates()">
+                            <span class="text-sm">Solid</span>
+                            <span class="ml-auto text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">0</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" value="DEVELOPING" onchange="filterCandidates()">
+                            <span class="text-sm">Developing</span>
+                            <span class="ml-auto text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">0</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Score Range -->
+                <div class="mb-6">
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">
+                        Score Range: <span id="score-range-display">0-100</span>
+                    </label>
+                    <input type="range" min="0" max="100" value="0" 
+                           class="w-full" onchange="filterCandidates()">
+                </div>
+
+                <!-- Work Style Filter -->
+                <div class="mb-6">
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Work Style</label>
+                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <option value="">All Styles</option>
+                        <option value="hunter">Hunter</option>
+                        <option value="farmer">Farmer</option>
+                        <option value="analyst">Analyst</option>
+                        <option value="coach">Coach</option>
+                    </select>
+                </div>
+
+                <!-- Date Filter -->
+                <div class="mb-6">
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Submission Date</label>
+                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+
+                <!-- Status Filter -->
+                <div class="mb-6">
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Status</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" checked>
+                            <span class="text-sm">New</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span class="text-sm">Reviewed</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span class="text-sm">Interview Scheduled</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span class="text-sm">Rejected</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Candidate List -->
+        <div class="flex-1 overflow-y-auto">
+            <div class="p-6">
+                <!-- Sorting Bar -->
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900">Candidates</h2>
+                    <div class="flex items-center space-x-4">
+                        <select class="px-4 py-2 border border-gray-300 rounded-lg text-sm">
+                            <option>Sort by: Score (High to Low)</option>
+                            <option>Sort by: Most Recent</option>
+                            <option>Sort by: Name (A-Z)</option>
+                        </select>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
+                            Export Results
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Candidate Cards -->
+                <div id="candidate-list" class="space-y-4">
+                    <!-- Candidates will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Candidate Detail Panel -->
+        <div id="detail-panel" class="w-96 bg-white border-l border-gray-200 overflow-y-auto hidden">
+            <!-- Candidate details will load here when selected -->
+        </div>
+    </div>
+
+    <script>
+        // Mock candidate data (in production, this comes from your backend)
+        let candidates = [];
+
+        // Load candidates from backend
+        async function loadCandidates() {
+            // In production, this fetches from your API
+            // For demo, using mock data
+            candidates = [
+                {
+                    id: 1,
+                    name: 'Michael Thompson',
+                    email: 'michael.t@email.com',
+                    phone: '555-0123',
+                    submittedAt: new Date().toISOString(),
+                    status: 'new',
+                    results: {
+                        totalScore: 92,
+                        tier: 'ELITE',
+                        scores: {
+                            culturalFit: 95,
+                            salesPotential: 88,
+                            leadershipPotential: 90,
+                            retentionLikelihood: 93,
+                            coachability: 94
+                        },
+                        profile: {
+                            workStyle: 'hunter',
+                            primaryMotivation: 'achievement',
+                            clientApproach: 'consultant',
+                            topStrengths: ['Leadership', 'Communication', 'Strategic Thinking']
+                        },
+                        strengths: [
+                            'Strong sales aptitude',
+                            'Excellent cultural alignment',
+                            'Natural leadership qualities'
+                        ],
+                        developmentAreas: ['Time management and prioritization'],
+                        recommendations: [
+                            'Fast-track for advanced sales training',
+                            'Assign high-value prospect list immediately',
+                            'Include in leadership development program'
+                        ],
+                        managerNotes: 'Candidate shows elite potential. Strong candidate for immediate hire with accelerated development path.'
+                    }
+                },
+                {
+                    id: 2,
+                    name: 'Sarah Martinez',
+                    email: 'sarah.m@email.com',
+                    phone: '555-0124',
+                    submittedAt: new Date(Date.now() - 86400000).toISOString(),
+                    status: 'reviewed',
+                    results: {
+                        totalScore: 78,
+                        tier: 'HIGH_POTENTIAL',
+                        scores: {
+                            culturalFit: 80,
+                            salesPotential: 75,
+                            leadershipPotential: 82,
+                            retentionLikelihood: 76,
+                            coachability: 77
+                        },
+                        profile: {
+                            workStyle: 'farmer',
+                            primaryMotivation: 'impact',
+                            clientApproach: 'partner',
+                            topStrengths: ['Relationship Building', 'Empathy', 'Persistence']
+                        }
+                    }
+                },
+                {
+                    id: 3,
+                    name: 'James Wilson',
+                    email: 'james.w@email.com',
+                    phone: '555-0125',
+                    submittedAt: new Date().toISOString(),
+                    status: 'new',
+                    results: {
+                        totalScore: 65,
+                        tier: 'SOLID',
+                        scores: {
+                            culturalFit: 70,
+                            salesPotential: 62,
+                            leadershipPotential: 60,
+                            retentionLikelihood: 68,
+                            coachability: 65
+                        },
+                        profile: {
+                            workStyle: 'analyst',
+                            primaryMotivation: 'stability',
+                            clientApproach: 'educator',
+                            topStrengths: ['Analytics', 'Problem Solving', 'Time Management']
+                        }
+                    }
+                }
+            ];
+
+            renderCandidates();
+            updateStats();
+        }
+
+        function renderCandidates() {
+            const listEl = document.getElementById('candidate-list');
+            
+            listEl.innerHTML = candidates.map(candidate => {
+                const tierColors = {
+                    'ELITE': 'border-purple-500 bg-purple-50',
+                    'HIGH_POTENTIAL': 'border-green-500 bg-green-50',
+                    'SOLID': 'border-blue-500 bg-blue-50',
+                    'DEVELOPING': 'border-yellow-500 bg-yellow-50'
+                };
+                
+                const statusBadges = {
+                    'new': 'bg-blue-100 text-blue-800',
+                    'reviewed': 'bg-gray-100 text-gray-800',
+                    'interview_scheduled': 'bg-green-100 text-green-800',
+                    'rejected': 'bg-red-100 text-red-800'
+                };
+                
+                return `
+                    <div class="candidate-card bg-white rounded-lg border-2 ${tierColors[candidate.results.tier]} p-6 cursor-pointer"
+                         onclick="showCandidateDetail(${candidate.id})">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <h3 class="text-lg font-semibold text-gray-900">${candidate.name}</h3>
+                                    <span class="text-xs px-2 py-1 rounded-full ${statusBadges[candidate.status]}">
+                                        ${candidate.status.replace('_', ' ').toUpperCase()}
+                                    </span>
+                                </div>
+                                <div class="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                                    <span>📧 ${candidate.email}</span>
+                                    <span>📱 ${candidate.phone}</span>
+                                    <span>🕐 ${new Date(candidate.submittedAt).toLocaleDateString()}</span>
+                                </div>
+                                <div class="flex items-center space-x-6">
+                                    <div>
+                                        <span class="text-xs text-gray-500">Work Style</span>
+                                        <p class="font-medium capitalize">${candidate.results.profile.workStyle}</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs text-gray-500">Motivation</span>
+                                        <p class="font-medium capitalize">${candidate.results.profile.primaryMotivation}</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs text-gray-500">Top Strengths</span>
+                                        <p class="font-medium">${candidate.results.profile.topStrengths.slice(0, 2).join(', ')}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-right ml-6">
+                                <div class="text-3xl font-bold text-gray-900">${candidate.results.totalScore}</div>
+                                <div class="text-sm font-semibold text-gray-600">${candidate.results.tier.replace('_', ' ')}</div>
+                                <div class="mt-2 space-y-1">
+                                    ${Object.entries(candidate.results.scores).slice(0, 3).map(([key, value]) => `
+                                        <div class="text-xs">
+                                            <span class="text-gray-500">${key.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                                            <span class="font-medium">${value}%</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showCandidateDetail(candidateId) {
+            const candidate = candidates.find(c => c.id === candidateId);
+            if (!candidate) return;
+            
+            const panel = document.getElementById('detail-panel');
+            panel.classList.remove('hidden');
+            
+            panel.innerHTML = `
+                <div class="p-6">
+                    <!-- Header -->
+                    <div class="flex items-start justify-between mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">${candidate.name}</h2>
+                            <p class="text-gray-600">${candidate.email} • ${candidate.phone}</p>
+                        </div>
+                        <button onclick="closeDetailPanel()" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Overall Score -->
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-4 text-white mb-6">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-blue-100">Overall Score</p>
+                                <p class="text-3xl font-bold">${candidate.results.totalScore}/100</p>
+                            </div>
+                            <span class="px-3 py-1 bg-white/20 rounded-lg font-semibold">
+                                ${candidate.results.tier.replace('_', ' ')}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Score Breakdown -->
+                    <div class="mb-6">
+                        <h3 class="font-semibold text-gray-900 mb-3">Intelligence Scores</h3>
+                        <div class="space-y-3">
+                            ${Object.entries(candidate.results.scores).map(([key, value]) => `
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm text-gray-600">
+                                            ${key.replace(/([A-Z])/g, ' $1').trim()}
+                                        </span>
+                                        <span class="text-sm font-medium">${value}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${value}%"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Profile Summary -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <h3 class="font-semibold text-gray-900 mb-3">Candidate Profile</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Work Style:</span>
+                                <span class="font-medium capitalize">${candidate.results.profile.workStyle}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Motivation:</span>
+                                <span class="font-medium capitalize">${candidate.results.profile.primaryMotivation}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Client Approach:</span>
+                                <span class="font-medium capitalize">${candidate.results.profile.clientApproach}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strengths -->
+                    ${candidate.results.strengths ? `
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-3">Key Strengths</h3>
+                            <div class="space-y-2">
+                                ${candidate.results.strengths.map(s => `
+                                    <div class="flex items-center text-sm">
+                                        <span class="text-green-500 mr-2">✓</span>
+                                        <span>${s}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <!-- Manager Notes -->
+                    ${candidate.results.managerNotes ? `
+                        <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-2">Intelligence Summary</h3>
+                            <p class="text-sm text-gray-700">${candidate.results.managerNotes}</p>
+                        </div>
+                    ` : ''}
+
+                    <!-- Internal Notes -->
+                    <div class="mb-6">
+                        <h3 class="font-semibold text-gray-900 mb-3">Internal Notes</h3>
+                        <textarea class="w-full p-3 border border-gray-300 rounded-lg text-sm" 
+                                  rows="4" placeholder="Add notes about this candidate..."></textarea>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-3">
+                        <button class="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                            Schedule Interview
+                        </button>
+                        <button class="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Send to Hiring Manager
+                        </button>
+                        <button class="w-full py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                            Request References
+                        </button>
+                        <button class="w-full py-2 text-red-600 hover:bg-red-50 rounded-lg">
+                            Reject Candidate
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeDetailPanel() {
+            document.getElementById('detail-panel').classList.add('hidden');
+        }
+
+        function updateStats() {
+            document.getElementById('total-candidates').textContent = candidates.length;
+            document.getElementById('qualified-count').textContent = 
+                candidates.filter(c => c.results.totalScore >= 70).length;
+            document.getElementById('today-count').textContent = 
+                candidates.filter(c => {
+                    const today = new Date().toDateString();
+                    return new Date(c.submittedAt).toDateString() === today;
+                }).length;
+        }
+
+        function filterCandidates() {
+            // Implement filtering logic
+            renderCandidates();
+        }
+
+        // Initialize
+        loadCandidates();
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadCandidates, 30000);
+    </script>
+</body>
+</html>
+
+
