@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "node-cron": "^4.2.1",
     "openai": "^5.12.2",
+    "path-to-regexp": "^6.2.1",
     "pg": "^8.16.3",
     "redis": "^5.8.1",
     "sendgrid": "^5.2.3",

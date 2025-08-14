@@ -292,7 +292,7 @@
             question.options.forEach(opt => {
                 html += `
                     <button class="option-card w-full text-left p-6 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-200" 
-                            onclick="selectOption('${question.id}','${opt.value}')">
+                            onclick="selectOption('${question.id}','${opt.value}', event)">
                         <div class="flex items-start">
                             <div class="flex-shrink-0 w-6 h-6 border-2 border-gray-300 rounded-full mr-4 mt-1"></div>
                             <div class="flex-1">
@@ -310,18 +310,25 @@
         updateProgress();
     }
 
-    function selectOption(questionId, value) {
+    function selectOption(questionId, value, event) {
         // Remove previous selections
         document.querySelectorAll('.option-card').forEach(card => {
             card.classList.remove('selected');
-            card.querySelector('.border-gray-300').classList.remove('border-blue-500');
-            card.querySelector('.border-gray-300').classList.add('border-gray-300');
+            const radioButton = card.querySelector('.border-gray-300');
+            if (radioButton) {
+                radioButton.classList.remove('border-blue-500');
+                radioButton.classList.add('border-gray-300');
+            }
         });
         
         // Highlight selected option
-        event.currentTarget.classList.add('selected');
-        event.currentTarget.querySelector('.border-gray-300').classList.remove('border-gray-300');
-        event.currentTarget.querySelector('.border-gray-300').classList.add('border-blue-500');
+        const selectedCard = event.currentTarget;
+        selectedCard.classList.add('selected');
+        const selectedRadio = selectedCard.querySelector('.border-gray-300');
+        if (selectedRadio) {
+            selectedRadio.classList.remove('border-gray-300');
+            selectedRadio.classList.add('border-blue-500');
+        }
         
         // Store response
         state.responses[questionId] = value;
