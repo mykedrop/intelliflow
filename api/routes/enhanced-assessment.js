@@ -44,9 +44,11 @@ router.post('/session/:sessionId/event', apiKeyAuth, async (req, res) => {
   res.json({ success: true });
 });
 
+// Submit assessment with enhanced intelligence
 router.post('/submit', apiKeyAuth, async (req, res) => {
   const { sessionId, responses, metadata } = req.body || {};
   const tenantId = req.tenant && req.tenant.id;
+  
   try {
     const tracker = behavioralSessions.get(sessionId);
     const behavioralReport = tracker ? tracker.generateIntelligenceReport() : null;
@@ -55,24 +57,31 @@ router.post('/submit', apiKeyAuth, async (req, res) => {
     const scores = await calculateEnhancedScores(responses || {}, behavioralReport, consistencyReport);
     const percentile = await benchmarkEngine.calculatePercentileRank(scores.totalScore, tenantId);
     const comparison = await benchmarkEngine.compareToTopPerformers(responses || {}, tenantId);
+    
+    // Extract contact information from metadata
+    const contactInfo = metadata && metadata.contactInfo || {};
+    
     const result = await pool.query(
       `INSERT INTO leads (
           lead_id, tenant_id, assessment_id,
           first_name, last_name, email, phone,
+          company, job_title,
           responses, behavioral_data,
           raw_scores, final_score, tier,
           ai_insights,
           created_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
         RETURNING *`,
       [
         `lead_${Date.now()}`,
         tenantId,
         metadata && metadata.assessmentId || null,
-        responses && responses.contact_info && responses.contact_info.first_name || null,
-        responses && responses.contact_info && responses.contact_info.last_name || null,
-        responses && responses.contact_info && responses.contact_info.email || null,
-        responses && responses.contact_info && responses.contact_info.phone || null,
+        contactInfo.first_name || null,
+        contactInfo.last_name || null,
+        contactInfo.email || null,
+        contactInfo.phone || null,
+        contactInfo.company || null,
+        contactInfo.job_title || null,
         JSON.stringify(responses || {}),
         JSON.stringify(behavioralReport || {}),
         JSON.stringify(scores.dimensionScores || {}),
@@ -87,7 +96,10 @@ router.post('/submit', apiKeyAuth, async (req, res) => {
         new Date()
       ]
     );
+    
+    // Clean up session
     behavioralSessions.delete(sessionId);
+    
     res.json({
       success: true,
       leadId: result.rows[0] && result.rows[0].id,
@@ -95,11 +107,12 @@ router.post('/submit', apiKeyAuth, async (req, res) => {
         totalScore: scores.totalScore,
         tier: scores.tier,
         percentile,
-        consistencyScore: consistencyReport.score,
+        consistencyScore: consistencyReport && consistencyReport.score,
         behavioralInsights: behavioralReport && behavioralReport.insights,
         recommendations: generateRecommendations(scores, behavioralReport, consistencyReport)
       }
     });
+    
   } catch (error) {
     console.error('Assessment submission error:', error);
     res.status(500).json({ error: 'Failed to process assessment' });

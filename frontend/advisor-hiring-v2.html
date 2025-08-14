@@ -10,7 +10,79 @@
 <body class="bg-slate-50">
     <div class="max-w-4xl mx-auto p-6">
         <h1 class="text-2xl font-bold mb-4">Advisor Excellence Assessment — v2</h1>
-        <div id="app" class="bg-white rounded-xl shadow p-6"></div>
+        
+        <!-- Contact Information Form -->
+        <div id="contact-form" class="bg-white rounded-xl shadow p-8 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Contact Information</h2>
+            <p class="text-gray-600 mb-6">Please provide your contact details before beginning the assessment.</p>
+            
+            <form id="candidate-form" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                        <input type="text" id="first_name" name="first_name" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                        <input type="text" id="last_name" name="last_name" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                    <input type="email" id="email" name="email" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           placeholder="+1 (555) 123-4567">
+                </div>
+                
+                <div>
+                    <label for="company" class="block text-sm font-medium text-gray-700 mb-1">Current Company</label>
+                    <input type="text" id="company" name="company" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           placeholder="Optional">
+                </div>
+                
+                <div>
+                    <label for="job_title" class="block text-sm font-medium text-gray-700 mb-1">Current Job Title</label>
+                    <input type="text" id="job_title" name="job_title" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           placeholder="Optional">
+                </div>
+                
+                <div class="pt-4">
+                    <button type="submit" 
+                            class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition font-medium">
+                        Start Assessment
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Assessment Container (Hidden initially) -->
+        <div id="assessment-container" class="hidden">
+            <div id="question-container" class="bg-white rounded-2xl shadow-xl p-8 mb-6">
+                <!-- Questions will be dynamically inserted here -->
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex justify-between">
+                <button id="prev-btn" onclick="previousQuestion()" class="px-6 py-3 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition hidden">
+                    ← Previous
+                </button>
+                <div></div>
+                <button id="next-btn" onclick="nextQuestion()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition hidden">
+                    Next →
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -186,19 +258,39 @@
         else return 'custom_approach';
     }
 
-    const state = { responses: {}, behaviorData: { corrections: 0, hesitations: 0 }, sessionId: null };
+    const state = { 
+        responses: {}, 
+        behaviorData: { corrections: 0, hesitations: 0 }, 
+        sessionId: null,
+        contactInfo: {}
+    };
 
     function render(question) {
-        const el = document.getElementById('app');
-        if (!question) { el.innerHTML = '<p class="text-gray-700">Assessment complete.</p>'; return; }
-        let html = `<h2 class="text-xl font-semibold mb-2">${question.text}</h2>`;
-        if (question.type === 'single' || question.type === 'scenario') {
-            html += '<div class="space-y-2">';
-            (question.options || []).forEach(opt => {
-                html += `<button class="w-full text-left p-3 border rounded hover:bg-blue-50" onclick="answer('${question.id}','${opt.value}')">${opt.label}</button>`;
+        const el = document.getElementById('question-container');
+        if (!question) { 
+            el.innerHTML = '<div class="text-center py-12"><h3 class="text-2xl font-bold text-gray-900 mb-4">Assessment Complete!</h3><p class="text-gray-600">Thank you for completing the assessment. We will review your responses and contact you soon.</p></div>'; 
+            return; 
+        }
+        
+        let html = `
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">${question.text}</h2>
+                <p class="text-gray-600">${question.subtitle || 'Please select your answer'}</p>
+            </div>
+        `;
+
+        if (question.type === 'single') {
+            html += '<div class="space-y-3">';
+            question.options.forEach(opt => {
+                html += `
+                    <button class="w-full text-left p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition" onclick="answer('${question.id}','${opt.value}')">
+                        <p class="font-medium">${opt.label}</p>
+                    </button>
+                `;
             });
             html += '</div>';
         }
+
         el.innerHTML = html;
     }
 
@@ -224,6 +316,7 @@
     function selectNextQuestion(responses, behaviorData) {
         const currentScore = calculateCurrentScore(responses);
         const performance = calculatePerformance(responses, behaviorData);
+        
         for (const [key, config] of Object.entries(adaptiveAssessment.conditionalQuestions)) {
             if (config.condition(responses, currentScore)) {
                 if (config.question && !responses[config.question.id]) return config.question;
@@ -233,6 +326,7 @@
                 }
             }
         }
+        
         return adaptiveAssessment.baseQuestions.find(q => !responses[q.id]);
     }
 
@@ -259,20 +353,47 @@
     }
 
     async function completeAssessment() {
-        const payload = { sessionId: state.sessionId, responses: state.responses, metadata: { assessmentId: 'nm_v2' } };
+        const payload = { 
+            sessionId: state.sessionId, 
+            responses: state.responses, 
+            metadata: { 
+                assessmentId: 'nm_v2',
+                contactInfo: state.contactInfo
+            } 
+        };
         try {
             await fetch('http://localhost:8000/api/enhanced-assessment/submit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'x-api-key': 'demo_api_key_12345' },
                 body: JSON.stringify(payload)
             });
-            document.getElementById('app').innerHTML = '<div class="p-6 bg-green-50 rounded">Thanks for completing the assessment.</div>';
+            document.getElementById('question-container').innerHTML = '<div class="p-6 bg-green-50 rounded text-center"><h3 class="text-2xl font-bold text-green-800 mb-2">Assessment Complete!</h3><p class="text-green-700">Thank you for completing the assessment. We will review your responses and contact you within 24-48 hours.</p></div>';
         } catch (e) { console.error('Submit failed', e); }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    // Handle contact form submission
+    document.getElementById('candidate-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Collect contact information
+        state.contactInfo = {
+            first_name: document.getElementById('first_name').value,
+            last_name: document.getElementById('last_name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            company: document.getElementById('company').value,
+            job_title: document.getElementById('job_title').value
+        };
+        
+        // Hide contact form and show assessment
+        document.getElementById('contact-form').classList.add('hidden');
+        document.getElementById('assessment-container').classList.remove('hidden');
+        
+        // Start behavioral tracking session
+        await startSession();
+        
+        // Start the assessment
         render(selectNextQuestion(state.responses, state.behaviorData));
-        startSession();
     });
     </script>
 </body>

@@ -3656,3 +3656,24 @@ TypeError: Missing parameter name at 1: https://git.new/pathToRegexpError
 
 Node.js v22.16.0
 [31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+/Users/mikeweingarten/Projects/intelliflow/node_modules/path-to-regexp/dist/index.js:73
+            throw new TypeError(`Missing parameter name at ${i}: ${DEBUG_URL}`);
+            ^
+
+TypeError: Missing parameter name at 1: https://git.new/pathToRegexpError
+    at name (/Users/mikeweingarten/Projects/intelliflow/node_modules/path-to-regexp/dist/index.js:73:19)
+    at lexer (/Users/mikeweingarten/Projects/intelliflow/node_modules/path-to-regexp/dist/index.js:91:27)
+    at lexer.next (<anonymous>)
+    at Iter.peek (/Users/mikeweingarten/Projects/intelliflow/node_modules/path-to-regexp/dist/index.js:106:38)
+    at Iter.tryConsume (/Users/mikeweingarten/Projects/intelliflow/node_modules/path-to-regexp/dist/index.js:112:28)
+    at Iter.text (/Users/mikeweingarten/Projects/intelliflow/node_modules/path-to-regexp/dist/index.js:128:30)
+    at consume (/Users/mikeweingarten/Projects/intelliflow/node_modules/path-to-regexp/dist/index.js:152:29)
+    at parse (/Users/mikeweingarten/Projects/intelliflow/node_modules/path-to-regexp/dist/index.js:183:20)
+    at /Users/mikeweingarten/Projects/intelliflow/node_modules/path-to-regexp/dist/index.js:294:74
+    at Array.map (<anonymous>)
+
+Node.js v22.16.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
