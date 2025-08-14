@@ -11,11 +11,15 @@
         body { font-family: 'Inter', sans-serif; }
         .gradient-bg { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
         .card-shadow { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
-        .option-card { transition: all 0.2s ease-in-out; }
-        .option-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3); }
-        .option-card.selected { border-color: #3b82f6; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); }
+        .option-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-card:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.3); }
+        .option-card.selected { border-color: #3b82f6; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); transform: scale(1.02); }
         .progress-bar { background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%); }
         .form-input:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-in { animation: slideIn 0.4s ease-out; }
+        @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
@@ -37,7 +41,7 @@
 
     <div class="max-w-5xl mx-auto px-6 py-12">
         <!-- Contact Information Form -->
-        <div id="contact-form" class="bg-white rounded-2xl card-shadow p-10 mb-8 border border-gray-100">
+        <div id="contact-form" class="bg-white rounded-2xl card-shadow p-10 mb-8 border border-gray-100 fade-in">
             <div class="text-center mb-8">
                 <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,133 +114,380 @@
             <div class="bg-white rounded-xl card-shadow p-6 mb-8 border border-gray-100">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-900">Assessment Progress</h3>
-                    <span id="progress-text" class="text-sm font-medium text-blue-600">Question 1 of 8</span>
+                    <span id="progress-text" class="text-sm font-medium text-blue-600">Question 1 of 12</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-3">
-                    <div id="progress-bar" class="progress-bar h-3 rounded-full transition-all duration-500" style="width: 12.5%"></div>
+                    <div id="progress-bar" class="progress-bar h-3 rounded-full transition-all duration-700 ease-out" style="width: 8.33%"></div>
                 </div>
             </div>
 
             <!-- Question Container -->
-            <div id="question-container" class="bg-white rounded-2xl card-shadow p-10 mb-8 border border-gray-100">
+            <div id="question-container" class="bg-white rounded-2xl card-shadow p-10 mb-8 border border-gray-100 slide-in">
                 <!-- Questions will be dynamically inserted here -->
             </div>
 
             <!-- Navigation -->
             <div class="flex justify-between items-center">
                 <button id="prev-btn" onclick="previousQuestion()" 
-                        class="px-8 py-3 text-gray-600 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200 font-medium shadow-sm hover:shadow-md hidden">
-                    <span class="flex items-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                        Previous
-                    </span>
+                        class="px-8 py-3 text-gray-600 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Previous
                 </button>
                 <div class="text-center">
                     <p class="text-sm text-gray-500">Your responses are being analyzed in real-time</p>
                 </div>
                 <button id="next-btn" onclick="nextQuestion()" 
-                        class="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hidden">
-                    <span class="flex items-center">
-                        Next
-                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </span>
+                        class="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center">
+                    Next
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-    const adaptiveAssessment = {
-        baseQuestions: [
-            {
-                id: 'work_style',
-                difficulty: 1,
-                text: 'How do you prefer to approach your work?',
-                subtitle: 'Select the approach that best describes your natural working style',
-                type: 'single',
-                options: [
-                    { value: 'hunter', label: 'Hunter', description: 'Proactive and results-driven, focused on new business development' },
-                    { value: 'farmer', label: 'Farmer', description: 'Relationship-focused, building long-term client partnerships' },
-                    { value: 'analyst', label: 'Analyst', description: 'Data-driven and methodical, focused on research and planning' },
-                    { value: 'coach', label: 'Coach', description: 'Mentoring and team development, helping others succeed' }
-                ]
-            },
-            {
-                id: 'client_approach',
-                difficulty: 1,
-                text: 'How do you prefer to work with clients?',
-                subtitle: 'Choose the approach that resonates most with your philosophy',
-                type: 'single',
-                options: [
-                    { value: 'educator', label: 'Educator', description: 'Teach clients about financial concepts and strategies' },
-                    { value: 'consultant', label: 'Consultant', description: 'Provide expert advice and strategic guidance' },
-                    { value: 'partner', label: 'Partner', description: 'Collaborate closely with clients on their financial journey' },
-                    { value: 'advocate', label: 'Advocate', description: 'Champion clients\' best interests and protect their assets' }
-                ]
-            },
-            {
-                id: 'motivation',
-                difficulty: 1,
-                text: 'What motivates you most in your career?',
-                subtitle: 'Select the primary driver of your professional success',
-                type: 'single',
-                options: [
-                    { value: 'achievement', label: 'Achievement', description: 'Meeting goals and exceeding expectations' },
-                    { value: 'impact', label: 'Impact', description: 'Making a positive difference in clients\' lives' },
-                    { value: 'growth', label: 'Growth', description: 'Continuous learning and career advancement' },
-                    { value: 'stability', label: 'Stability', description: 'Reliable income and long-term security' }
-                ]
-            },
-            {
-                id: 'challenge_response',
-                difficulty: 2,
-                text: 'When faced with a challenging client situation, you typically:',
-                subtitle: 'Choose your most natural response pattern',
-                type: 'single',
-                options: [
-                    { value: 'analyze', label: 'Analyze', description: 'Gather information and assess all options carefully' },
-                    { value: 'act', label: 'Act', description: 'Take immediate action to address the issue' },
-                    { value: 'collaborate', label: 'Collaborate', description: 'Work with the client to find a solution together' },
-                    { value: 'delegate', label: 'Delegate', description: 'Involve appropriate experts or team members' }
-                ]
-            },
-            {
-                id: 'risk_tolerance',
-                difficulty: 2,
-                text: 'How would you describe your approach to risk management?',
-                subtitle: 'Select the statement that best reflects your philosophy',
-                type: 'single',
-                options: [
-                    { value: 'conservative', label: 'Conservative', description: 'Prioritize capital preservation and steady growth' },
-                    { value: 'balanced', label: 'Balanced', description: 'Seek moderate risk for moderate returns' },
-                    { value: 'aggressive', label: 'Aggressive', description: 'Accept higher risk for potentially higher returns' },
-                    { value: 'adaptive', label: 'Adaptive', description: 'Adjust risk approach based on client needs and market conditions' }
-                ]
-            }
-        ],
-        conditionalQuestions: {
-            hunter_followup: {
-                condition: (responses) => responses.work_style === 'hunter',
-                question: {
-                    id: 'hunter_strategy',
-                    difficulty: 2,
-                    text: 'Describe your approach to finding new clients',
-                    subtitle: 'Select the strategy that best describes your prospecting method',
-                    type: 'scenario',
-                    options: [
-                        { value: 'network', label: 'Network', description: 'Leverage existing network and referrals' },
-                        { value: 'cold', label: 'Cold Outreach', description: 'Direct prospecting and cold calling' },
-                        { value: 'digital', label: 'Digital Marketing', description: 'Social media and online lead generation' },
-                        { value: 'events', label: 'Events', description: 'Community involvement and event networking' }
-                    ]
+    const assessmentQuestions = [
+        {
+            id: 'work_philosophy',
+            text: 'What best describes your philosophy about financial planning?',
+            subtitle: 'Choose the approach that resonates most with your core beliefs',
+            type: 'single',
+            options: [
+                { 
+                    value: 'holistic_planner', 
+                    label: 'Holistic Life Planner', 
+                    description: 'I believe financial planning should encompass all aspects of life - career, family, health, and legacy. Money is a tool to achieve life goals, not just accumulate wealth.' 
+                },
+                { 
+                    value: 'goal_oriented', 
+                    label: 'Goal-Oriented Strategist', 
+                    description: 'I focus on setting clear, measurable financial goals and creating systematic plans to achieve them. Success is measured by hitting specific milestones.' 
+                },
+                { 
+                    value: 'risk_manager', 
+                    label: 'Risk Management Specialist', 
+                    description: 'I prioritize protecting what clients have built while seeking growth opportunities. Understanding and managing risk is fundamental to my approach.' 
+                },
+                { 
+                    value: 'relationship_builder', 
+                    label: 'Relationship-Focused Advisor', 
+                    description: 'I build long-term partnerships based on trust and understanding. The client relationship is the foundation of everything I do.' 
                 }
-            }
+            ]
+        },
+        {
+            id: 'client_challenge',
+            text: 'A client comes to you with a $500,000 inheritance and wants to invest it all in cryptocurrency. What\'s your approach?',
+            subtitle: 'Select the response that best reflects your professional judgment',
+            type: 'scenario',
+            options: [
+                { 
+                    value: 'educate_risk', 
+                    label: 'Educate on Risk & Diversify', 
+                    description: 'I would explain the volatility and risks of crypto, then suggest a diversified approach - perhaps 5-10% in crypto with the rest in a balanced portfolio.' 
+                },
+                { 
+                    value: 'understand_motivation', 
+                    label: 'Understand Motivation First', 
+                    description: 'I\'d explore why they want crypto - is it FOMO, genuine belief, or seeking high returns? Understanding their motivation guides my advice.' 
+                },
+                { 
+                    value: 'propose_alternatives', 
+                    label: 'Propose Alternative Strategies', 
+                    description: 'I\'d present other high-growth strategies that might better align with their goals, such as growth stocks, real estate, or private equity.' 
+                },
+                { 
+                    value: 'risk_tolerance_assessment', 
+                    label: 'Assess Risk Tolerance & Proceed', 
+                    description: 'If they truly understand the risks and have high risk tolerance, I\'d help them implement this strategy while ensuring it doesn\'t jeopardize their overall financial security.' 
+                }
+            ]
+        },
+        {
+            id: 'market_volatility',
+            text: 'During a market downturn, a client calls panicking about their portfolio. How do you respond?',
+            subtitle: 'Choose your most natural response pattern',
+            type: 'scenario',
+            options: [
+                { 
+                    value: 'calm_reassure', 
+                    label: 'Calm & Reassure', 
+                    description: 'I immediately reassure them that this is normal market behavior, remind them of their long-term strategy, and offer to review their portfolio together.' 
+                },
+                { 
+                    value: 'data_driven', 
+                    label: 'Data-Driven Perspective', 
+                    description: 'I show them historical data on market recoveries, explain why downturns happen, and demonstrate how their portfolio is positioned for recovery.' 
+                },
+                { 
+                    value: 'opportunity_focus', 
+                    label: 'Focus on Opportunities', 
+                    description: 'I help them see this as a potential buying opportunity, discuss dollar-cost averaging, and identify undervalued positions in their portfolio.' 
+                },
+                { 
+                    value: 'strategy_review', 
+                    label: 'Review & Adjust Strategy', 
+                    description: 'I use this as an opportunity to review their risk tolerance, discuss if their strategy needs adjustment, and potentially rebalance their portfolio.' 
+                }
+            ]
+        },
+        {
+            id: 'client_conflict',
+            text: 'You discover a client is considering working with another advisor who\'s offering unrealistic returns. What do you do?',
+            subtitle: 'Select your approach to this challenging situation',
+            type: 'scenario',
+            options: [
+                { 
+                    value: 'direct_confrontation', 
+                    label: 'Direct Confrontation', 
+                    description: 'I would directly challenge the other advisor\'s claims, provide evidence of why they\'re unrealistic, and protect my client from potential harm.' 
+                },
+                { 
+                    value: 'educate_client', 
+                    label: 'Educate the Client', 
+                    description: 'I\'d help my client understand how to evaluate advisor claims, teach them to ask the right questions, and let them make an informed decision.' 
+                },
+                { 
+                    value: 'enhance_value', 
+                    label: 'Enhance My Value Proposition', 
+                    description: 'I\'d focus on demonstrating my unique value, strengthening our relationship, and ensuring they see why working with me is in their best interest.' 
+                },
+                { 
+                    value: 'collaborative_approach', 
+                    label: 'Collaborative Approach', 
+                    description: 'I\'d offer to work alongside the other advisor if appropriate, or suggest a second opinion approach to ensure the client gets the best of both worlds.' 
+                }
+            ]
+        },
+        {
+            id: 'ethical_dilemma',
+            text: 'A client asks you to help them hide assets from their spouse during a divorce. What\'s your response?',
+            subtitle: 'Choose the response that best reflects your ethical standards',
+            type: 'scenario',
+            options: [
+                { 
+                    value: 'firm_refusal', 
+                    label: 'Firm Refusal', 
+                    description: 'I would firmly decline and explain that this is illegal and unethical. I\'d also suggest they seek legal counsel for proper divorce proceedings.' 
+                },
+                { 
+                    value: 'educate_legal', 
+                    label: 'Educate on Legal Consequences', 
+                    description: 'I\'d explain the serious legal and financial consequences of hiding assets, including potential criminal charges and impact on the divorce settlement.' 
+                },
+                { 
+                    value: 'refer_legal', 
+                    label: 'Refer to Legal Professional', 
+                    description: 'I\'d decline to help with hiding assets but offer to refer them to a qualified divorce attorney who can guide them through proper legal channels.' 
+                },
+                { 
+                    value: 'explore_underlying', 
+                    label: 'Explore Underlying Concerns', 
+                    description: 'I\'d try to understand their underlying fears and concerns, then help them address those issues through legal and ethical means rather than hiding assets.' 
+                }
+            ]
+        },
+        {
+            id: 'business_development',
+            text: 'How do you prefer to develop new business relationships?',
+            subtitle: 'Select your most effective approach to growing your client base',
+            type: 'single',
+            options: [
+                { 
+                    value: 'referral_network', 
+                    label: 'Referral Network Building', 
+                    description: 'I focus on building strong relationships with existing clients and professionals (CPAs, attorneys) who can refer new clients to me.' 
+                },
+                { 
+                    value: 'content_marketing', 
+                    label: 'Content Marketing & Education', 
+                    description: 'I create valuable content, host educational events, and position myself as a thought leader to attract clients who value expertise.' 
+                },
+                { 
+                    value: 'social_networking', 
+                    label: 'Social & Community Involvement', 
+                    description: 'I actively participate in community organizations, social groups, and networking events to meet potential clients in natural settings.' 
+                },
+                { 
+                    value: 'digital_outreach', 
+                    label: 'Digital Outreach & Social Media', 
+                    description: 'I use social media, email marketing, and digital advertising to reach potential clients and showcase my expertise online.' 
+                }
+            ]
+        },
+        {
+            id: 'client_education',
+            text: 'How do you approach client education about complex financial concepts?',
+            subtitle: 'Choose your preferred method for helping clients understand financial planning',
+            type: 'single',
+            options: [
+                { 
+                    value: 'visual_aids', 
+                    label: 'Visual Aids & Graphics', 
+                    description: 'I use charts, graphs, and visual presentations to make complex concepts easy to understand and remember.' 
+                },
+                { 
+                    value: 'real_world_examples', 
+                    label: 'Real-World Examples', 
+                    description: 'I explain concepts using relatable examples from everyday life, current events, or the client\'s own situation.' 
+                },
+                { 
+                    value: 'progressive_learning', 
+                    label: 'Progressive Learning Approach', 
+                    description: 'I break down complex topics into smaller, digestible pieces and build understanding step by step over time.' 
+                },
+                { 
+                    value: 'interactive_discussion', 
+                    label: 'Interactive Discussion', 
+                    description: 'I engage clients in conversation, ask questions, and encourage them to think through concepts rather than just telling them.' 
+                }
+            ]
+        },
+        {
+            id: 'stress_management',
+            text: 'How do you handle high-pressure situations with clients?',
+            subtitle: 'Select your approach to managing stressful client interactions',
+            type: 'single',
+            options: [
+                { 
+                    value: 'structured_process', 
+                    label: 'Structured Process', 
+                    description: 'I rely on established processes and checklists to ensure nothing is missed, even under pressure.' 
+                },
+                { 
+                    value: 'emotional_regulation', 
+                    label: 'Emotional Regulation', 
+                    description: 'I practice mindfulness and emotional control to remain calm and focused, which helps clients feel more secure.' 
+                },
+                { 
+                    value: 'collaborative_problem_solving', 
+                    label: 'Collaborative Problem Solving', 
+                    description: 'I involve the client in finding solutions, which reduces pressure and creates better outcomes together.' 
+                },
+                { 
+                    value: 'expertise_reliance', 
+                    label: 'Expertise & Preparation', 
+                    description: 'I rely on my deep knowledge and thorough preparation to handle any situation confidently and competently.' 
+                }
+            ]
+        },
+        {
+            id: 'long_term_vision',
+            text: 'What\'s your vision for your role as a financial advisor in 10 years?',
+            subtitle: 'Choose the long-term vision that most resonates with you',
+            type: 'single',
+            options: [
+                { 
+                    value: 'industry_leader', 
+                    label: 'Industry Thought Leader', 
+                    description: 'I want to be recognized as an expert in my field, speaking at conferences, writing articles, and influencing industry practices.' 
+                },
+                { 
+                    value: 'team_builder', 
+                    label: 'Team Builder & Mentor', 
+                    description: 'I envision building a team of advisors, mentoring the next generation, and creating a sustainable practice that outlives me.' 
+                },
+                { 
+                    value: 'specialist_expert', 
+                    label: 'Specialist Expert', 
+                    description: 'I want to become the go-to expert in a specific niche or specialty area within financial planning.' 
+                },
+                { 
+                    value: 'client_impact', 
+                    label: 'Client Impact Focus', 
+                    description: 'My focus is on the number of lives I\'ve positively impacted and the meaningful difference I\'ve made for families and individuals.' 
+                }
+            ]
+        },
+        {
+            id: 'technology_adaptation',
+            text: 'How do you view the role of technology in financial advising?',
+            subtitle: 'Select your perspective on technology integration',
+            type: 'single',
+            options: [
+                { 
+                    value: 'tech_enhancer', 
+                    label: 'Technology Enhancer', 
+                    description: 'I see technology as a tool to enhance my services, improve efficiency, and provide better client experiences while maintaining the human touch.' 
+                },
+                { 
+                    value: 'digital_transformer', 
+                    label: 'Digital Transformer', 
+                    description: 'I believe in leveraging technology to fundamentally transform how financial advice is delivered and make it more accessible to more people.' 
+                },
+                { 
+                    value: 'human_centric', 
+                    label: 'Human-Centric Approach', 
+                    description: 'I focus on the human relationship and use technology only when it clearly improves the client experience without replacing personal connection.' 
+                },
+                { 
+                    value: 'hybrid_model', 
+                    label: 'Hybrid Model Advocate', 
+                    description: 'I believe in combining the best of human expertise with technology to create a new model of financial advising that\'s both personal and efficient.' 
+                }
+            ]
+        },
+        {
+            id: 'client_retention',
+            text: 'What\'s your strategy for maintaining long-term client relationships?',
+            subtitle: 'Choose your approach to client retention and loyalty',
+            type: 'single',
+            options: [
+                { 
+                    value: 'proactive_service', 
+                    label: 'Proactive Service', 
+                    description: 'I regularly reach out with updates, market insights, and proactive recommendations to show I\'m actively managing their financial life.' 
+                },
+                { 
+                    value: 'value_added_services', 
+                    label: 'Value-Added Services', 
+                    description: 'I provide additional services beyond basic financial planning - tax strategies, estate planning coordination, business consulting, etc.' 
+                },
+                { 
+                    value: 'relationship_investment', 
+                    label: 'Relationship Investment', 
+                    description: 'I invest time in understanding their family, business, and personal goals, building a relationship that goes beyond just financial advice.' 
+                },
+                { 
+                    value: 'performance_focus', 
+                    label: 'Performance & Results', 
+                    description: 'I focus on delivering consistent, measurable results and performance that demonstrates the value of our ongoing relationship.' 
+                }
+            ]
+        },
+        {
+            id: 'personal_growth',
+            text: 'How do you approach your own professional development and learning?',
+            subtitle: 'Select your approach to continuous improvement',
+            type: 'single',
+            options: [
+                { 
+                    value: 'formal_education', 
+                    label: 'Formal Education & Certifications', 
+                    description: 'I pursue advanced degrees, professional certifications, and structured learning programs to build my expertise systematically.' 
+                },
+                { 
+                    value: 'peer_learning', 
+                    label: 'Peer Learning & Networking', 
+                    description: 'I learn from other successful advisors, participate in mastermind groups, and build relationships with industry peers.' 
+                },
+                { 
+                    value: 'client_feedback', 
+                    label: 'Client Feedback & Adaptation', 
+                    description: 'I use client feedback, market changes, and real-world challenges to identify areas where I need to grow and adapt.' 
+                },
+                { 
+                    value: 'experimental_learning', 
+                    label: 'Experimental Learning', 
+                    description: 'I try new approaches, learn from failures, and continuously experiment with different strategies to improve my practice.' 
+                }
+            ]
         }
-    };
+    ];
 
     const state = { 
         responses: {}, 
@@ -247,17 +498,25 @@
     };
 
     function updateProgress() {
-        const totalQuestions = adaptiveAssessment.baseQuestions.length;
+        const totalQuestions = assessmentQuestions.length;
         const answered = Object.keys(state.responses).length;
         const progress = (answered / totalQuestions) * 100;
         
         document.getElementById('progress-bar').style.width = `${progress}%`;
         document.getElementById('progress-text').textContent = `Question ${answered + 1} of ${totalQuestions}`;
+        
+        // Show/hide navigation buttons
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        prevBtn.style.display = answered > 0 ? 'flex' : 'none';
+        nextBtn.style.display = answered > 0 ? 'flex' : 'none';
     }
 
-    function render(question) {
+    function render(questionIndex) {
         const el = document.getElementById('question-container');
-        if (!question) { 
+        
+        if (questionIndex >= assessmentQuestions.length) { 
             el.innerHTML = `
                 <div class="text-center py-16">
                     <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -280,21 +539,25 @@
             return; 
         }
         
+        const question = assessmentQuestions[questionIndex];
         let html = `
             <div class="mb-8">
                 <h2 class="text-2xl font-bold text-gray-900 mb-3">${question.text}</h2>
-                <p class="text-gray-600 text-lg">${question.subtitle || 'Please select the option that best describes you'}</p>
+                <p class="text-gray-600 text-lg">${question.subtitle}</p>
             </div>
         `;
 
         if (question.type === 'single' || question.type === 'scenario') {
             html += '<div class="space-y-4">';
-            question.options.forEach(opt => {
+            question.options.forEach((opt, index) => {
+                const isSelected = state.responses[question.id] === opt.value;
                 html += `
-                    <button class="option-card w-full text-left p-6 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-200" 
-                            onclick="selectOption('${question.id}','${opt.value}', event)">
+                    <button class="option-card w-full text-left p-6 border-2 ${isSelected ? 'border-blue-500 selected' : 'border-gray-200'} rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-300" 
+                            onclick="selectOption('${question.id}','${opt.value}', ${questionIndex})">
                         <div class="flex items-start">
-                            <div class="flex-shrink-0 w-6 h-6 border-2 border-gray-300 rounded-full mr-4 mt-1"></div>
+                            <div class="flex-shrink-0 w-6 h-6 border-2 ${isSelected ? 'border-blue-500 bg-blue-500' : 'border-gray-300'} rounded-full mr-4 mt-1 flex items-center justify-center">
+                                ${isSelected ? '<div class="w-2 h-2 bg-white rounded-full"></div>' : ''}
+                            </div>
                             <div class="flex-1">
                                 <p class="font-semibold text-gray-900 text-lg mb-2">${opt.label}</p>
                                 <p class="text-gray-600">${opt.description}</p>
@@ -310,47 +573,38 @@
         updateProgress();
     }
 
-    function selectOption(questionId, value, event) {
-        // Remove previous selections
-        document.querySelectorAll('.option-card').forEach(card => {
-            card.classList.remove('selected');
-            const radioButton = card.querySelector('.border-gray-300');
-            if (radioButton) {
-                radioButton.classList.remove('border-blue-500');
-                radioButton.classList.add('border-gray-300');
-            }
-        });
-        
-        // Highlight selected option
-        const selectedCard = event.currentTarget;
-        selectedCard.classList.add('selected');
-        const selectedRadio = selectedCard.querySelector('.border-gray-300');
-        if (selectedRadio) {
-            selectedRadio.classList.remove('border-gray-300');
-            selectedRadio.classList.add('border-blue-500');
-        }
-        
+    function selectOption(questionId, value, questionIndex) {
         // Store response
         state.responses[questionId] = value;
         
+        // Update the current question display to show selection
+        render(questionIndex);
+        
         // Auto-advance after a brief delay
         setTimeout(() => {
-            const next = selectNextQuestion(state.responses, state.behaviorData);
-            if (next) {
-                render(next);
+            if (questionIndex < assessmentQuestions.length - 1) {
+                state.currentQuestionIndex = questionIndex + 1;
+                render(state.currentQuestionIndex);
             } else {
                 completeAssessment();
             }
-        }, 800);
+        }, 1000);
     }
 
-    function selectNextQuestion(responses, behaviorData) {
-        for (const [key, config] of Object.entries(adaptiveAssessment.conditionalQuestions)) {
-            if (config.condition(responses)) {
-                if (config.question && !responses[config.question.id]) return config.question;
-            }
+    function previousQuestion() {
+        if (state.currentQuestionIndex > 0) {
+            state.currentQuestionIndex--;
+            render(state.currentQuestionIndex);
         }
-        return adaptiveAssessment.baseQuestions.find(q => !responses[q.id]);
+    }
+
+    function nextQuestion() {
+        if (state.currentQuestionIndex < assessmentQuestions.length - 1) {
+            state.currentQuestionIndex++;
+            render(state.currentQuestionIndex);
+        } else {
+            completeAssessment();
+        }
     }
 
     async function startSession() {
@@ -380,7 +634,7 @@
                 headers: { 'Content-Type': 'application/json', 'x-api-key': 'demo_api_key_12345' },
                 body: JSON.stringify(payload)
             });
-            render(null); // Show completion screen
+            render(assessmentQuestions.length); // Show completion screen
         } catch (e) { console.error('Submit failed', e); }
     }
 
@@ -406,7 +660,8 @@
         await startSession();
         
         // Start the assessment
-        render(selectNextQuestion(state.responses, state.behaviorData));
+        state.currentQuestionIndex = 0;
+        render(0);
     });
     </script>
 </body>

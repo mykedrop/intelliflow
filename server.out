@@ -3728,3 +3728,49 @@ TypeError: Missing parameter name at 1: https://git.new/pathToRegexpError
 
 Node.js v22.16.0
 [31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+node:internal/modules/cjs/loader:1404
+  throw err;
+  ^
+
+Error: Cannot find module 'dotenv'
+Require stack:
+- /Users/mikeweingarten/Projects/intelliflow/api/server.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (/Users/mikeweingarten/Projects/intelliflow/api/server.js:1:1)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [ '/Users/mikeweingarten/Projects/intelliflow/api/server.js' ]
+}
+
+Node.js v22.16.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+/Users/mikeweingarten/Projects/intelliflow/node_modules/router/node_modules/path-to-regexp/dist/index.js:73
+            throw new TypeError(`Missing parameter name at ${i}: ${DEBUG_URL}`);
+            ^
+
+TypeError: Missing parameter name at 1: https://git.new/pathToRegexpError
+    at name (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/node_modules/path-to-regexp/dist/index.js:73:19)
+    at lexer (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/node_modules/path-to-regexp/dist/index.js:91:27)
+    at lexer.next (<anonymous>)
+    at Iter.peek (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/node_modules/path-to-regexp/dist/index.js:106:38)
+    at Iter.tryConsume (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/node_modules/path-to-regexp/dist/index.js:112:28)
+    at Iter.text (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/node_modules/path-to-regexp/dist/index.js:128:30)
+    at consume (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/node_modules/path-to-regexp/dist/index.js:152:29)
+    at parse (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/node_modules/path-to-regexp/dist/index.js:183:20)
+    at /Users/mikeweingarten/Projects/intelliflow/node_modules/router/node_modules/path-to-regexp/dist/index.js:294:74
+    at Array.map (<anonymous>)
+
+Node.js v22.16.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
