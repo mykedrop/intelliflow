@@ -1,232 +1,338 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recruiting Intelligence Dashboard v2</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Northwestern Mutual - Recruiting Intelligence Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+        .card-shadow { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .stat-card { transition: all 0.2s ease-in-out; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .tier-elite { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
+        .tier-high { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .tier-solid { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        .tier-developing { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); }
+    </style>
 </head>
-<body class="bg-gray-50">
-  <div class="max-w-6xl mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-4">Recruiting Intelligence Dashboard — v2</h1>
-    
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-4 gap-4 mb-6">
-      <div class="bg-white rounded-lg shadow p-4">
-        <h3 class="text-sm font-medium text-gray-500">Total Candidates</h3>
-        <p id="total-candidates" class="text-2xl font-bold text-gray-900">-</p>
-      </div>
-      <div class="bg-white rounded-lg shadow p-4">
-        <h3 class="text-sm font-medium text-gray-500">ELITE Tier</h3>
-        <p id="elite-count" class="text-2xl font-bold text-green-600">-</p>
-      </div>
-      <div class="bg-white rounded-lg shadow p-4">
-        <h3 class="text-sm font-medium text-gray-500">High Potential</h3>
-        <p id="high-potential-count" class="text-2xl font-bold text-blue-600">-</p>
-      </div>
-      <div class="bg-white rounded-lg shadow p-4">
-        <h3 class="text-sm font-medium text-gray-500">Avg Score</h3>
-        <p id="avg-score" class="text-2xl font-bold text-purple-600">-</p>
-      </div>
-    </div>
-
-    <!-- Search and Filters -->
-    <div class="bg-white rounded-lg shadow p-4 mb-6">
-      <div class="flex gap-4">
-        <input id="search" class="flex-1 border rounded px-3 py-2" placeholder="Search by name or email..." />
-        <select id="tier-filter" class="border rounded px-3 py-2">
-          <option value="">All Tiers</option>
-          <option value="ELITE">ELITE</option>
-          <option value="HIGH_POTENTIAL">HIGH_POTENTIAL</option>
-          <option value="SOLID">SOLID</option>
-          <option value="DEVELOPING">DEVELOPING</option>
-        </select>
-        <button onclick="loadCandidates()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-          Refresh
-        </button>
-      </div>
-    </div>
-
-    <!-- Candidates Table -->
-    <div class="bg-white rounded-lg shadow">
-      <div class="p-4 border-b">
-        <h2 class="text-lg font-semibold">Latest Candidates</h2>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tier</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applied</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="candidates" class="bg-white divide-y divide-gray-200">
-            <!-- Candidates will be inserted here -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Benchmarks Section -->
-    <div class="mt-6 bg-white rounded-lg shadow p-4">
-      <h3 class="text-lg font-semibold mb-4">Benchmarks & Analytics</h3>
-      <div id="benchmarks" class="text-sm text-gray-700"></div>
-    </div>
-  </div>
-
-  <script>
-  const API_KEY = 'demo_api_key_12345';
-  const API_BASE = 'http://localhost:8000';
-
-  async function loadBenchmarks() {
-    try {
-      const res = await fetch(`${API_BASE}/api/enhanced-assessment/benchmarks`, { 
-        headers: { 'x-api-key': API_KEY } 
-      });
-      const data = await res.json();
-      
-      const benchmarksEl = document.getElementById('benchmarks');
-      benchmarksEl.innerHTML = `
-        <div class="grid grid-cols-3 gap-4">
-          <div>
-            <strong>Total Candidates:</strong> ${data.totalCandidates || 0}
-          </div>
-          <div>
-            <strong>Average Score:</strong> ${Math.round(data.averageScore || 0)}
-          </div>
-          <div>
-            <strong>Distribution:</strong> ${data.distribution ? data.distribution.length + ' buckets' : 'N/A'}
-          </div>
-        </div>
-      `;
-    } catch (error) {
-      console.error('Failed to load benchmarks:', error);
-    }
-  }
-
-  async function loadCandidates() {
-    try {
-      // First get the tenant ID using the API key
-      const tenantRes = await fetch(`${API_BASE}/api/leads`, { 
-        headers: { 'x-api-key': API_KEY } 
-      });
-      
-      if (!tenantRes.ok) {
-        throw new Error(`HTTP ${tenantRes.status}: ${tenantRes.statusText}`);
-      }
-      
-      const candidates = await tenantRes.json();
-      
-      // Update stats
-      document.getElementById('total-candidates').textContent = candidates.length;
-      document.getElementById('elite-count').textContent = candidates.filter(c => c.tier === 'ELITE').length;
-      document.getElementById('high-potential-count').textContent = candidates.filter(c => c.tier === 'HIGH_POTENTIAL').length;
-      
-      const avgScore = candidates.length > 0 
-        ? Math.round(candidates.reduce((sum, c) => sum + (c.final_score || 0), 0) / candidates.length)
-        : 0;
-      document.getElementById('avg-score').textContent = avgScore;
-
-      // Render candidates
-      const tbody = document.getElementById('candidates');
-      tbody.innerHTML = candidates.map(candidate => `
-        <tr class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="flex items-center">
-              <div class="flex-shrink-0 h-10 w-10">
-                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                  <span class="text-sm font-medium text-blue-600">
-                    ${(candidate.first_name || '').charAt(0)}${(candidate.last_name || '').charAt(0)}
-                  </span>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <!-- Header -->
+    <div class="gradient-bg text-white">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight">Northwestern Mutual</h1>
+                    <p class="text-blue-100 text-lg mt-1">Recruiting Intelligence Dashboard</p>
                 </div>
-              </div>
-              <div class="ml-4">
-                <div class="text-sm font-medium text-gray-900">
-                  ${candidate.first_name || ''} ${candidate.last_name || ''}
+                <div class="text-right">
+                    <div class="text-sm text-blue-200">Real-time Analytics</div>
+                    <div class="text-xs text-blue-300">AI-Powered Insights</div>
                 </div>
-                <div class="text-sm text-gray-500">${candidate.email || ''}</div>
-              </div>
             </div>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="text-sm text-gray-900">${candidate.final_score || 'N/A'}</div>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-              ${candidate.tier === 'ELITE' ? 'bg-green-100 text-green-800' : 
-                candidate.tier === 'HIGH_POTENTIAL' ? 'bg-blue-100 text-blue-800' :
-                candidate.tier === 'SOLID' ? 'bg-yellow-100 text-yellow-800' :
-                'bg-gray-100 text-gray-800'}">
-              ${candidate.tier || 'N/A'}
-            </span>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-            ${candidate.status || 'New'}
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-            ${new Date(candidate.created_at).toLocaleDateString()}
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-            <button class="text-blue-600 hover:text-blue-900 mr-3">View</button>
-            <button class="text-green-600 hover:text-green-900">Contact</button>
-          </td>
-        </tr>
-      `).join('');
-      
-    } catch (error) {
-      console.error('Failed to load candidates:', error);
-      document.getElementById('candidates').innerHTML = `
-        <tr><td colspan="6" class="px-6 py-4 text-center text-red-600">
-          Failed to load candidates: ${error.message}
-        </td></tr>
-      `;
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 py-12">
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="stat-card bg-white rounded-2xl card-shadow p-6 border border-gray-100">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Candidates</p>
+                        <p id="total-candidates" class="text-2xl font-bold text-gray-900">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card bg-white rounded-2xl card-shadow p-6 border border-gray-100">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">ELITE Tier</p>
+                        <p id="elite-count" class="text-2xl font-bold text-gray-900">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card bg-white rounded-2xl card-shadow p-6 border border-gray-100">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">High Potential</p>
+                        <p id="high-potential-count" class="text-2xl font-bold text-gray-900">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card bg-white rounded-2xl card-shadow p-6 border border-gray-100">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Avg Score</p>
+                        <p id="avg-score" class="text-2xl font-bold text-gray-900">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="bg-white rounded-2xl card-shadow p-6 mb-8 border border-gray-100">
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div class="flex-1 max-w-md">
+                    <label for="search" class="sr-only">Search candidates</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input type="text" id="search" placeholder="Search by name or email..." 
+                               class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <select id="tier-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">All Tiers</option>
+                        <option value="ELITE">ELITE</option>
+                        <option value="HIGH_POTENTIAL">HIGH_POTENTIAL</option>
+                        <option value="SOLID">SOLID</option>
+                        <option value="DEVELOPING">DEVELOPING</option>
+                    </select>
+                    <button onclick="loadCandidates()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Candidates Table -->
+        <div class="bg-white rounded-2xl card-shadow border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Candidate Intelligence</h3>
+                <p class="text-sm text-gray-600">Real-time assessment results and behavioral insights</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tier</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AI Insights</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="candidates-table" class="bg-white divide-y divide-gray-200">
+                        <!-- Candidates will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Benchmarks Section -->
+        <div class="mt-8 bg-white rounded-2xl card-shadow p-6 border border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Performance Benchmarks</h3>
+            <div id="benchmarks-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Benchmark data will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const API_KEY = 'demo_api_key_12345';
+    const API_BASE = 'http://localhost:8000';
+
+    // WebSocket connection for real-time updates
+    const ws = new WebSocket('ws://localhost:8001');
+    
+    ws.onopen = function() {
+        console.log('WebSocket connected');
+    };
+    
+    ws.onmessage = function(event) {
+        console.log('WebSocket message received:', event.data);
+        loadCandidates();
+        loadBenchmarks();
+    };
+
+    async function loadCandidates() {
+        try {
+            const response = await fetch(`${API_BASE}/api/leads`, {
+                headers: {
+                    'x-api-key': API_KEY
+                }
+            });
+            const candidates = await response.json();
+            
+            updateStats(candidates);
+            renderCandidatesTable(candidates);
+        } catch (error) {
+            console.error('Failed to load candidates:', error);
+        }
     }
-  }
 
-  // Filter functionality
-  document.addEventListener('input', (e) => {
-    if (e.target.id === 'search') {
-      const query = e.target.value.toLowerCase();
-      const rows = Array.from(document.querySelectorAll('#candidates tr'));
-      rows.forEach(row => {
-        const name = row.querySelector('td:first-child').textContent.toLowerCase();
-        const email = row.querySelector('td:first-child .text-gray-500').textContent.toLowerCase();
-        const visible = name.includes(query) || email.includes(query);
-        row.style.display = visible ? '' : 'none';
-      });
+    function updateStats(candidates) {
+        const total = candidates.length;
+        const elite = candidates.filter(c => c.tier === 'ELITE').length;
+        const highPotential = candidates.filter(c => c.tier === 'HIGH_POTENTIAL').length;
+        const avgScore = candidates.length > 0 ? 
+            Math.round(candidates.reduce((sum, c) => sum + (c.final_score || 0), 0) / candidates.length) : 0;
+
+        document.getElementById('total-candidates').textContent = total;
+        document.getElementById('elite-count').textContent = elite;
+        document.getElementById('high-potential-count').textContent = highPotential;
+        document.getElementById('avg-score').textContent = avgScore;
     }
-  });
 
-  document.addEventListener('change', (e) => {
-    if (e.target.id === 'tier-filter') {
-      const tier = e.target.value;
-      const rows = Array.from(document.querySelectorAll('#candidates tr'));
-      rows.forEach(row => {
-        const candidateTier = row.querySelector('td:nth-child(3) span').textContent;
-        const visible = !tier || candidateTier === tier;
-        row.style.display = visible ? '' : 'none';
-      });
+    function renderCandidatesTable(candidates) {
+        const tbody = document.getElementById('candidates-table');
+        const searchTerm = document.getElementById('search').value.toLowerCase();
+        const tierFilter = document.getElementById('tier-filter').value;
+
+        let filteredCandidates = candidates.filter(candidate => {
+            const matchesSearch = !searchTerm || 
+                (candidate.first_name && candidate.first_name.toLowerCase().includes(searchTerm)) ||
+                (candidate.last_name && candidate.last_name.toLowerCase().includes(searchTerm)) ||
+                (candidate.email && candidate.email.toLowerCase().includes(searchTerm));
+            
+            const matchesTier = !tierFilter || candidate.tier === tierFilter;
+            
+            return matchesSearch && matchesTier;
+        });
+
+        tbody.innerHTML = filteredCandidates.map(candidate => `
+            <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span class="text-sm font-medium text-blue-600">
+                                ${(candidate.first_name || 'N')[0]}${(candidate.last_name || 'A')[0]}
+                            </span>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900">
+                                ${candidate.first_name || 'N/A'} ${candidate.last_name || 'N/A'}
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                ${candidate.company || 'No company'} • ${candidate.job_title || 'No title'}
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">${candidate.email || 'N/A'}</div>
+                    <div class="text-sm text-gray-500">${candidate.phone || 'No phone'}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-semibold text-gray-900">${candidate.final_score || 'N/A'}</div>
+                    <div class="text-xs text-gray-500">/ 100</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full text-white ${getTierClass(candidate.tier)}">
+                        ${candidate.tier || 'N/A'}
+                    </span>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="text-sm text-gray-900">
+                        ${getAIInsights(candidate.ai_insights)}
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button class="text-blue-600 hover:text-blue-900 mr-3">View Details</button>
+                    <button class="text-green-600 hover:text-green-900">Contact</button>
+                </td>
+            </tr>
+        `).join('');
     }
-  });
 
-  // WebSocket for real-time updates
-  const ws = new WebSocket('ws://localhost:8001');
-  ws.onmessage = () => { 
-    loadCandidates(); 
-    loadBenchmarks(); 
-  };
-  ws.onerror = () => console.log('WebSocket connection failed, continuing without real-time updates');
+    function getTierClass(tier) {
+        switch(tier) {
+            case 'ELITE': return 'tier-elite';
+            case 'HIGH_POTENTIAL': return 'tier-high';
+            case 'SOLID': return 'tier-solid';
+            case 'DEVELOPING': return 'tier-developing';
+            default: return 'bg-gray-500';
+        }
+    }
 
-  // Initialize
-  document.addEventListener('DOMContentLoaded', () => {
+    function getAIInsights(aiInsights) {
+        if (!aiInsights) return 'No insights available';
+        
+        try {
+            const insights = typeof aiInsights === 'string' ? JSON.parse(aiInsights) : aiInsights;
+            if (insights.percentile) {
+                return `Top ${100 - Math.round(insights.percentile)}% • ${insights.recommendations ? insights.recommendations[0] : 'Strong candidate'}`;
+            }
+            return 'Analysis in progress';
+        } catch (e) {
+            return 'Insights available';
+        }
+    }
+
+    async function loadBenchmarks() {
+        try {
+            const response = await fetch(`${API_BASE}/api/enhanced-assessment/benchmarks`, {
+                headers: {
+                    'x-api-key': API_KEY
+                }
+            });
+            const benchmarks = await response.json();
+            
+            renderBenchmarks(benchmarks);
+        } catch (error) {
+            console.error('Failed to load benchmarks:', error);
+        }
+    }
+
+    function renderBenchmarks(benchmarks) {
+        const container = document.getElementById('benchmarks-container');
+        
+        if (benchmarks.distribution && benchmarks.distribution.length > 0) {
+            container.innerHTML = benchmarks.distribution.map(bucket => `
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <div class="text-sm font-medium text-gray-600">Score ${bucket.bucket * 10 - 9}-${bucket.bucket * 10}</div>
+                    <div class="text-2xl font-bold text-gray-900">${bucket.count}</div>
+                    <div class="text-sm text-gray-500">Avg: ${Math.round(bucket.avg_score)}</div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = `
+                <div class="col-span-3 text-center py-8 text-gray-500">
+                    <p>Benchmark data will appear as more candidates complete assessments</p>
+                </div>
+            `;
+        }
+    }
+
+    // Event listeners
+    document.getElementById('search').addEventListener('input', loadCandidates);
+    document.getElementById('tier-filter').addEventListener('change', loadCandidates);
+
+    // Initial load
     loadCandidates();
     loadBenchmarks();
-  });
-  </script>
+    </script>
 </body>
 </html>
 
