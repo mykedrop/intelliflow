@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advisor Assessment v2 - Northwestern Mutual</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.gstatic.com http://localhost:8000; connect-src 'self' http://localhost:8000; font-src https://fonts.gstatic.com data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.gstatic.com http://localhost:8000 http://127.0.0.1:8000; connect-src 'self' http://localhost:8000 http://127.0.0.1:8000; font-src https://fonts.gstatic.com data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com;">
 </head>
 <body class="bg-slate-50">
     <div class="max-w-4xl mx-auto p-6">
@@ -239,7 +239,11 @@
     window.answer = function(id, value) {
         state.responses[id] = value;
         const next = selectNextQuestion(state.responses, state.behaviorData);
-        render(next);
+        if (next) {
+            render(next);
+        } else {
+            completeAssessment();
+        }
     }
 
     async function startSession() {
@@ -252,6 +256,18 @@
             const data = await res.json();
             state.sessionId = data.sessionId;
         } catch (e) { console.error('Failed to start session', e); }
+    }
+
+    async function completeAssessment() {
+        const payload = { sessionId: state.sessionId, responses: state.responses, metadata: { assessmentId: 'nm_v2' } };
+        try {
+            await fetch('http://localhost:8000/api/enhanced-assessment/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-api-key': 'demo_api_key_12345' },
+                body: JSON.stringify(payload)
+            });
+            document.getElementById('app').innerHTML = '<div class="p-6 bg-green-50 rounded">Thanks for completing the assessment.</div>';
+        } catch (e) { console.error('Submit failed', e); }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
