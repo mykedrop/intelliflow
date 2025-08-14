@@ -74,3 +74,67 @@ Unhandled error: Error: Not allowed by CORS
     at processParams (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/index.js:582:12)
     at next (/Users/mikeweingarten/Projects/intelliflow/node_modules/router/index.js:291:5)
     at urlencodedParser (/Users/mikeweingarten/Projects/intelliflow/node_modules/body-parser/lib/types/urlencoded.js:68:7)
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 version env with Radar: https://dotenvx.com/radar
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════

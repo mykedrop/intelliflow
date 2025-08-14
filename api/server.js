@@ -108,6 +108,7 @@ app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/reports', require('./routes/reports'));
 app.use('/api/webhooks', require('./routes/webhooks'));
 app.use('/api/integrations', require('./routes/integrations'));
+app.use('/api/enhanced-assessment', require('./routes/enhanced-assessment'));
 
 // 404
 app.use((req, res) => {

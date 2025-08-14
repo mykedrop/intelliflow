@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advisor Assessment v2 - Northwestern Mutual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.gstatic.com http://localhost:8000; connect-src 'self' http://localhost:8000; font-src https://fonts.gstatic.com data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com;">
+</head>
+<body class="bg-slate-50">
+    <div class="max-w-4xl mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-4">Advisor Excellence Assessment — v2</h1>
+        <div id="app" class="bg-white rounded-xl shadow p-6"></div>
+    </div>
+
+    <script>
+    const adaptiveAssessment = {
+        baseQuestions: [
+            {
+                id: 'work_style',
+                difficulty: 1,
+                text: 'How do you prefer to approach your work?',
+                type: 'single',
+                options: [
+                    { value: 'hunter', label: 'Hunter' },
+                    { value: 'farmer', label: 'Farmer' },
+                    { value: 'analyst', label: 'Analyst' },
+                    { value: 'coach', label: 'Coach' }
+                ]
+            }
+        ],
+        conditionalQuestions: {
+            hunter_followup: {
+                condition: (responses) => responses.work_style === 'hunter',
+                question: {
+                    id: 'hunter_strategy',
+                    difficulty: 2,
+                    text: 'Describe your approach to finding new clients',
+                    type: 'scenario',
+                    options: [
+                        { value: 'network', label: 'Leverage existing network and referrals' },
+                        { value: 'cold', label: 'Cold outreach and prospecting' },
+                        { value: 'digital', label: 'Digital marketing and social media' },
+                        { value: 'events', label: 'Events and community involvement' }
+                    ]
+                }
+            },
+            high_performer_questions: {
+                condition: (responses, currentScore) => currentScore > 80,
+                questions: [
+                    { id: 'complex_scenario_1', difficulty: 3, text: 'A $10M client wants to make a risky investment against your advice. How do you handle it?', type: 'open_scenario', scoreWeight: 1.5 },
+                    { id: 'leadership_challenge', difficulty: 3, text: 'You discover a top performer on your team is cutting ethical corners. What\'s your response?', type: 'ethical_scenario', scoreWeight: 1.5 }
+                ]
+            },
+            struggling_candidate_questions: {
+                condition: (responses, currentScore) => currentScore < 50,
+                questions: [
+                    { id: 'basic_understanding', difficulty: 1, text: 'What interests you most about financial services?', type: 'simple_choice' }
+                ]
+            }
+        },
+        difficultyProgression: {
+            calculateNextDifficulty: (currentDifficulty, performance) => {
+                if (performance > 0.8) return Math.min(currentDifficulty + 1, 5);
+                if (performance < 0.5) return Math.max(currentDifficulty - 1, 1);
+                return currentDifficulty;
+            }
+        }
+    };
+
+    const situationalScenarios = [
+        {
+            id: 'client_crisis',
+            type: 'situational',
+            difficulty: 2,
+            text: 'A long-time client calls in panic about market volatility and wants to sell everything. What do you do?',
+            options: [
+                { value: 'calm_educate', label: 'Calm them down and educate about long-term strategy', score: 90, traits: ['emotional_intelligence', 'education_focused'] },
+                { value: 'partial_adjust', label: 'Suggest a partial adjustment to ease concerns', score: 70, traits: ['pragmatic', 'client_focused'] },
+                { value: 'follow_wishes', label: 'Follow their wishes but document your advice', score: 40, traits: ['compliant', 'risk_averse'] },
+                { value: 'schedule_meeting', label: 'Schedule immediate meeting to review together', score: 85, traits: ['relationship_focused', 'thorough'] }
+            ],
+            scoringLogic: (answer, responseTime, behaviorData) => {
+                let baseScore = answer.score;
+                if (responseTime > 5000 && responseTime < 15000) baseScore += 5;
+                else if (responseTime < 3000) baseScore -= 10;
+                else if (responseTime > 30000) baseScore -= 5;
+                if ((behaviorData && behaviorData.hesitations) === 0) baseScore += 5;
+                return { score: Math.min(100, baseScore), traits: answer.traits, insights: generateScenarioInsights(answer, responseTime) };
+            }
+        },
+        {
+            id: 'ethical_dilemma',
+            type: 'situational',
+            difficulty: 3,
+            text: 'You discover a colleague is slightly inflating performance numbers. They are a friend. What do you do?',
+            options: [
+                { value: 'report_immediately', label: 'Report to compliance immediately', score: 85, traits: ['high_integrity', 'rule_follower'] },
+                { value: 'confront_privately', label: 'Confront them privately first', score: 75, traits: ['diplomatic', 'relationship_aware'] },
+                { value: 'anonymous_report', label: 'Submit anonymous report', score: 60, traits: ['cautious', 'conflict_avoidant'] },
+                { value: 'ignore', label: 'Not my responsibility', score: 0, traits: ['low_integrity', 'disengaged'] }
+            ]
+        },
+        {
+            id: 'sales_pressure',
+            type: 'situational',
+            difficulty: 2,
+            text: 'End of quarter, you are just short of your target. A client is interested but needs more time. What do you do?',
+            options: [
+                { value: 'respect_timeline', label: 'Respect their timeline, miss target if needed', score: 95, traits: ['client_first', 'long_term_focused'] },
+                { value: 'incentivize', label: 'Offer appropriate incentive for quick decision', score: 70, traits: ['balanced', 'results_oriented'] },
+                { value: 'pressure', label: 'Apply subtle pressure about limited availability', score: 30, traits: ['short_term_focused', 'aggressive'] },
+                { value: 'manager_help', label: 'Ask manager for target flexibility', score: 60, traits: ['collaborative', 'realistic'] }
+            ]
+        }
+    ];
+
+    function generateScenarioInsights(answer, responseTime) {
+        const insights = [];
+        if (responseTime < 3000) insights.push('Quick decision maker - may benefit from pause training');
+        else if (responseTime > 20000) insights.push('Thoughtful but may struggle with time-sensitive decisions');
+        (answer.traits || []).forEach(trait => {
+            switch(trait) {
+                case 'emotional_intelligence': insights.push('High EQ - good for client relationships'); break;
+                case 'high_integrity': insights.push('Strong ethical compass - trustworthy'); break;
+                case 'client_first': insights.push('Client-focused approach - builds loyalty'); break;
+                case 'short_term_focused': insights.push('May prioritize immediate results over relationships'); break;
+            }
+        });
+        return insights;
+    }
+
+    const rankingExercises = [
+        {
+            id: 'priority_ranking',
+            type: 'ranking',
+            text: 'Rank these tasks by priority for a typical day',
+            items: [
+                { id: 'new_leads', label: 'Contact new leads', idealRank: 2 },
+                { id: 'existing_clients', label: 'Check in with existing clients', idealRank: 1 },
+                { id: 'paperwork', label: 'Complete compliance paperwork', idealRank: 4 },
+                { id: 'learning', label: 'Product training/education', idealRank: 5 },
+                { id: 'planning', label: 'Strategic planning', idealRank: 3 }
+            ],
+            scoring: (userRanking) => {
+                let score = 100;
+                const insights = [];
+                userRanking.forEach((item, index) => {
+                    const idealRank = item.idealRank - 1;
+                    const difference = Math.abs(index - idealRank);
+                    score -= difference * 10;
+                    if (difference > 2) insights.push(`${item.label} significantly mis-prioritized`);
+                });
+                if (userRanking[0].id === 'new_leads') insights.push('Hunter mentality - prioritizes new business');
+                else if (userRanking[0].id === 'existing_clients') insights.push('Farmer mentality - prioritizes relationships');
+                else if (userRanking[0].id === 'paperwork') insights.push('Process-focused - may need sales coaching');
+                return { score: Math.max(0, score), insights, style: classifyPriorityStyle(userRanking) };
+            }
+        },
+        {
+            id: 'value_ranking',
+            type: 'ranking',
+            text: 'Rank these values in order of importance to you',
+            items: [
+                { id: 'income', label: 'High income potential' },
+                { id: 'balance', label: 'Work-life balance' },
+                { id: 'growth', label: 'Career growth opportunity' },
+                { id: 'impact', label: 'Making a difference' },
+                { id: 'recognition', label: 'Recognition and status' }
+            ],
+            scoring: (userRanking) => {
+                const profile = { primaryDriver: userRanking[0].id, secondaryDriver: userRanking[1].id, insights: [] };
+                if (userRanking[0].id === 'balance' && userRanking[1].id === 'income') profile.insights.push('Potential conflict: work-life balance vs high income goals');
+                if (userRanking[0].id === 'growth' || userRanking[0].id === 'impact') profile.insights.push('Mission-driven - likely higher retention');
+                return profile;
+            }
+        }
+    ];
+
+    function classifyPriorityStyle(ranking) {
+        const first = ranking[0].id;
+        const second = ranking[1].id;
+        if (first === 'new_leads' && second === 'planning') return 'strategic_hunter';
+        else if (first === 'existing_clients' && second === 'new_leads') return 'balanced_grower';
+        else if (first === 'paperwork' || first === 'learning') return 'process_oriented';
+        else return 'custom_approach';
+    }
+
+    const state = { responses: {}, behaviorData: { corrections: 0, hesitations: 0 } };
+
+    function render(question) {
+        const el = document.getElementById('app');
+        if (!question) { el.innerHTML = '<p class="text-gray-700">Assessment complete.</p>'; return; }
+        let html = `<h2 class="text-xl font-semibold mb-2">${question.text}</h2>`;
+        if (question.type === 'single' || question.type === 'scenario') {
+            html += '<div class="space-y-2">';
+            (question.options || []).forEach(opt => {
+                html += `<button class="w-full text-left p-3 border rounded hover:bg-blue-50" onclick="answer('${question.id}','${opt.value}')">${opt.label}</button>`;
+            });
+            html += '</div>';
+        }
+        el.innerHTML = html;
+    }
+
+    function calculateCurrentScore(responses) {
+        const vals = Object.values(responses).filter(v => typeof v === 'number');
+        if (vals.length === 0) return 0;
+        return Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+    }
+
+    function calculatePerformance(responses, behaviorData) {
+        let performance = 0.5;
+        const avgResponseTime = behaviorData.averageResponseTime || 10000;
+        if (avgResponseTime > 5000 && avgResponseTime < 20000) performance += 0.2;
+        if ((behaviorData.corrections || 0) < 2) performance += 0.1;
+        const scores = Object.values(responses).filter(r => typeof r === 'number');
+        if (scores.length > 0) {
+            const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+            performance = (performance + avgScore / 100) / 2;
+        }
+        return Math.min(1, Math.max(0, performance));
+    }
+
+    function selectNextQuestion(responses, behaviorData) {
+        const currentScore = calculateCurrentScore(responses);
+        const performance = calculatePerformance(responses, behaviorData);
+        for (const [key, config] of Object.entries(adaptiveAssessment.conditionalQuestions)) {
+            if (config.condition(responses, currentScore)) {
+                if (config.question && !responses[config.question.id]) return config.question;
+                if (config.questions) {
+                    const unanswered = config.questions.find(q => !responses[q.id]);
+                    if (unanswered) return unanswered;
+                }
+            }
+        }
+        return adaptiveAssessment.baseQuestions.find(q => !responses[q.id]);
+    }
+
+    window.answer = function(id, value) {
+        state.responses[id] = value;
+        const next = selectNextQuestion(state.responses, state.behaviorData);
+        render(next);
+    }
+
+    render(selectNextQuestion(state.responses, state.behaviorData));
+    </script>
+</body>
+</html>
+
+
