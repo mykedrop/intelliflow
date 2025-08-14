@@ -3774,3 +3774,17 @@ TypeError: Missing parameter name at 1: https://git.new/pathToRegexpError
 
 Node.js v22.16.0
 [31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  override existing env vars with { override: true }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════

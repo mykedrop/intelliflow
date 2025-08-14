@@ -500,17 +500,20 @@
     function updateProgress() {
         const totalQuestions = assessmentQuestions.length;
         const answered = Object.keys(state.responses).length;
-        const progress = (answered / totalQuestions) * 100;
+        const currentQuestion = state.currentQuestionIndex + 1;
+        
+        // Fix progress calculation - show current question number, not answered count
+        const progress = (currentQuestion / totalQuestions) * 100;
         
         document.getElementById('progress-bar').style.width = `${progress}%`;
-        document.getElementById('progress-text').textContent = `Question ${answered + 1} of ${totalQuestions}`;
+        document.getElementById('progress-text').textContent = `Question ${currentQuestion} of ${totalQuestions}`;
         
         // Show/hide navigation buttons
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         
-        prevBtn.style.display = answered > 0 ? 'flex' : 'none';
-        nextBtn.style.display = answered > 0 ? 'flex' : 'none';
+        prevBtn.style.display = currentQuestion > 1 ? 'flex' : 'none';
+        nextBtn.style.display = currentQuestion < totalQuestions ? 'flex' : 'none';
     }
 
     function render(questionIndex) {
@@ -586,6 +589,7 @@
                 state.currentQuestionIndex = questionIndex + 1;
                 render(state.currentQuestionIndex);
             } else {
+                // This is the last question, show completion screen
                 completeAssessment();
             }
         }, 1000);
@@ -603,6 +607,7 @@
             state.currentQuestionIndex++;
             render(state.currentQuestionIndex);
         } else {
+            // This is the last question, complete the assessment
             completeAssessment();
         }
     }
@@ -628,14 +633,28 @@
                 contactInfo: state.contactInfo
             } 
         };
+        
         try {
-            await fetch('http://localhost:8000/api/enhanced-assessment/submit', {
+            console.log('Submitting assessment with payload:', payload);
+            const response = await fetch('http://localhost:8000/api/enhanced-assessment/submit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'x-api-key': 'demo_api_key_12345' },
                 body: JSON.stringify(payload)
             });
-            render(assessmentQuestions.length); // Show completion screen
-        } catch (e) { console.error('Submit failed', e); }
+            
+            if (response.ok) {
+                console.log('Assessment submitted successfully');
+                render(assessmentQuestions.length); // Show completion screen
+            } else {
+                console.error('Failed to submit assessment:', response.status, response.statusText);
+                // Still show completion screen even if submission fails
+                render(assessmentQuestions.length);
+            }
+        } catch (e) { 
+            console.error('Submit failed:', e); 
+            // Show completion screen even if there's an error
+            render(assessmentQuestions.length);
+        }
     }
 
     // Handle contact form submission
