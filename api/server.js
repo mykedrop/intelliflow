@@ -143,13 +143,68 @@ server.listen(API_PORT, () => {
 
 // WebSocket server (ws)
 const wss = new WebSocket.Server({ port: WS_PORT });
+
+// Store connected clients by tenant
+const connectedClients = new Map();
+
 wss.on('connection', (socket) => {
-  socket.send(JSON.stringify({ type: 'welcome', message: 'Connected to OracleBrain WS' }));
-  socket.on('message', (data) => {
-    // Echo back
-    socket.send(JSON.stringify({ type: 'echo', data: data.toString() }));
-  });
+    let clientTenant = 'default';
+    
+    socket.send(JSON.stringify({ type: 'welcome', message: 'Connected to OracleBrain WS' }));
+    
+    // Handle client authentication and tenant assignment
+    socket.on('message', (data) => {
+        try {
+            const message = JSON.parse(data.toString());
+            
+            if (message.type === 'authenticate') {
+                clientTenant = message.tenant_id || 'default';
+                
+                // Add client to tenant group
+                if (!connectedClients.has(clientTenant)) {
+                    connectedClients.set(clientTenant, new Set());
+                }
+                connectedClients.get(clientTenant).add(socket);
+                
+                socket.send(JSON.stringify({ 
+                    type: 'authenticated', 
+                    tenant_id: clientTenant 
+                }));
+            }
+        } catch (e) {
+            console.error('WebSocket message error:', e);
+        }
+    });
+    
+    // Handle client disconnect
+    socket.on('close', () => {
+        // Remove from all tenant groups
+        connectedClients.forEach((clients, tenant) => {
+            if (clients.has(socket)) {
+                clients.delete(socket);
+                if (clients.size === 0) {
+                    connectedClients.delete(tenant);
+                }
+            }
+        });
+    });
 });
+
+// Function to broadcast to specific tenant
+function broadcastToTenant(tenantId, message) {
+    const clients = connectedClients.get(tenantId);
+    if (clients) {
+        const messageStr = JSON.stringify(message);
+        clients.forEach(client => {
+            if (client.readyState === 1) { // WebSocket.OPEN
+                client.send(messageStr);
+            }
+        });
+    }
+}
+
+// Make broadcast function available to routes
+app.set('broadcastToTenant', broadcastToTenant);
 
 module.exports = app;
 

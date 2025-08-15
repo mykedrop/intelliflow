@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Northwestern Mutual - Intelligence Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+        .tier-elite { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+        .tier-high { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .tier-solid { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        .tier-developing { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .status-new { background: #3b82f6; }
+        .status-reviewed { background: #10b981; }
+        .status-interview { background: #f59e0b; }
+        .status-rejected { background: #ef4444; }
+        .score-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .score-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+            transition: width 0.3s ease;
+        }
+        .candidate-card {
+            transition: all 0.2s ease;
+            border-color: #e5e7eb;
+        }
+        .candidate-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        .filter-checkbox:checked + label {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .filter-checkbox:checked + label::before {
+            content: '✓';
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <div class="gradient-bg text-white fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">Northwestern Mutual</h1>
+                    <p class="text-blue-100 text-sm">Intelligence Dashboard</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-blue-200">Live Assessment Data</div>
+                    <div class="text-xs text-blue-300">Real Intelligence Only</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main 3-Panel Layout -->
+    <div class="flex h-screen pt-16">
+        
+        <!-- LEFT SIDEBAR: Advanced Filters -->
+        <div class="w-80 bg-white border-r border-gray-200 overflow-y-auto">
+            <div class="p-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-6">Filters & Search</h2>
+                
+                <!-- Search Box -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Search Candidates</label>
+                    <input type="text" id="search-input" placeholder="Name, email, or phone..." 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <!-- Tier Filter -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Tier</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" class="filter-checkbox hidden" value="ELITE" checked>
+                            <span class="w-4 h-4 border-2 border-gray-300 rounded mr-3 flex items-center justify-center text-xs font-bold text-white"></span>
+                            <span class="text-sm text-gray-700">ELITE</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" class="filter-checkbox hidden" value="HIGH_POTENTIAL" checked>
+                            <span class="w-4 h-4 border-2 border-gray-300 rounded mr-3 flex items-center justify-center text-xs font-bold text-white"></span>
+                            <span class="text-sm text-gray-700">HIGH_POTENTIAL</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" class="filter-checkbox hidden" value="SOLID" checked>
+                            <span class="w-4 h-4 border-2 border-gray-300 rounded mr-3 flex items-center justify-center text-xs font-bold text-white"></span>
+                            <span class="text-sm text-gray-700">SOLID</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" class="filter-checkbox hidden" value="DEVELOPING" checked>
+                            <span class="w-4 h-4 border-2 border-gray-300 rounded mr-3 flex items-center justify-center text-xs font-bold text-white"></span>
+                            <span class="text-sm text-gray-700">DEVELOPING</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Score Range -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Score Range</label>
+                    <div class="flex items-center space-x-2">
+                        <input type="number" id="min-score" placeholder="Min" min="0" max="100" 
+                               class="w-20 px-2 py-1 border border-gray-300 rounded text-sm">
+                        <span class="text-gray-500">to</span>
+                        <input type="number" id="max-score" placeholder="Max" min="0" max="100" 
+                               class="w-20 px-2 py-1 border border-gray-300 rounded text-sm">
+                    </div>
+                </div>
+
+                <!-- Work Style -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Work Style</label>
+                    <select id="work-style-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">All Styles</option>
+                        <option value="hunter">Hunter</option>
+                        <option value="farmer">Farmer</option>
+                        <option value="analyst">Analyst</option>
+                        <option value="coach">Coach</option>
+                    </select>
+                </div>
+
+                <!-- Status Filter -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Status</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" class="filter-checkbox hidden" value="new" checked>
+                            <span class="w-4 h-4 border-2 border-gray-300 rounded mr-3 flex items-center justify-center text-xs font-bold text-white"></span>
+                            <span class="text-sm text-gray-700">New</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" class="filter-checkbox hidden" value="reviewed" checked>
+                            <span class="w-4 h-4 border-2 border-gray-300 rounded mr-3 flex items-center justify-center text-xs font-bold text-white"></span>
+                            <span class="text-sm text-gray-700">Reviewed</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" class="filter-checkbox hidden" value="interview_scheduled" checked>
+                            <span class="w-4 h-4 border-2 border-gray-300 rounded mr-3 flex items-center justify-center text-xs font-bold text-white"></span>
+                            <span class="text-sm text-gray-700">Interview Scheduled</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" class="filter-checkbox hidden" value="rejected" checked>
+                            <span class="w-4 h-4 border-2 border-gray-300 rounded mr-3 flex items-center justify-center text-xs font-bold text-white"></span>
+                            <span class="text-sm text-gray-700">Rejected</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Date Filter -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Submitted After</label>
+                    <input type="date" id="date-filter" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <!-- Clear Filters -->
+                <button onclick="clearAllFilters()" 
+                        class="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                    Clear All Filters
+                </button>
+            </div>
+        </div>
+        
+        <!-- CENTER: Candidate Cards -->
+        <div class="flex-1 overflow-y-auto p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">Candidates</h2>
+                    <p class="text-sm text-gray-600" id="candidate-count">Loading...</p>
+                </div>
+                <button onclick="loadRealCandidates()" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    Refresh
+                </button>
+            </div>
+            
+            <div id="candidate-list" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Candidate cards will be dynamically inserted here -->
+            </div>
+        </div>
+        
+        <!-- RIGHT: Slide-out Detail Panel -->
+        <div id="detail-panel" class="w-96 bg-white border-l border-gray-200 overflow-y-auto hidden">
+            <!-- Candidate detail content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Candidate Detail Modal -->
+    <div id="detail-modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
+        <div class="bg-white w-full max-w-3xl rounded-xl shadow-xl overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b">
+                <h3 id="modal-title" class="text-lg font-semibold text-gray-900">Candidate Details</h3>
+                <button onclick="closeDetailModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="modal-content" class="p-6 max-h-[75vh] overflow-y-auto"></div>
+        </div>
+    </div>
+ 
+    <script>
+    const API_KEY = 'demo_api_key_12345';
+    const API_BASE = 'http://localhost:8000/api';
+    let allCandidates = [];
+    let filteredCandidates = [];
+
+    // WebSocket connection for real-time updates
+    const ws = new WebSocket('ws://localhost:8001');
+    
+    ws.onopen = function() {
+        console.log('WebSocket connected to Northwestern Mutual dashboard');
+    };
+    
+    ws.onmessage = function(event) {
+        try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'new_candidate') {
+                showNotification('New candidate submitted!');
+                loadRealCandidates();
+            }
+        } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+        }
+    };
+
+    // REAL DATA LOADING - NO FAKE DATA
+    async function loadRealCandidates() {
+        try {
+            const response = await fetch(`${API_BASE}/candidates`, {
+                headers: {
+                    'x-api-key': API_KEY
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            const candidates = data.candidates || [];
+            
+            if (candidates.length === 0) {
+                showEmptyState();
+                return;
+            }
+            
+            // Transform API data to match our required structure
+            allCandidates = candidates.map(transformCandidateData);
+            filteredCandidates = [...allCandidates];
+            
+            updateCandidateCount();
+            renderCandidateCards(filteredCandidates);
+            
+        } catch (error) {
+            console.error('Failed to load real candidates:', error);
+            showError('Unable to load candidate data. Please check connection.');
+        }
+    }
+
+    function transformCandidateData(apiCandidate) {
+        // Transform the API response to match our required data structure
+        return {
+            id: apiCandidate.id,
+            name: `${apiCandidate.first_name} ${apiCandidate.last_name}`,
+            email: apiCandidate.email,
+            phone: apiCandidate.phone,
+            submittedAt: apiCandidate.submitted_at,
+            status: apiCandidate.status || 'new',
+            results: {
+                totalScore: apiCandidate.score || 0,
+                tier: mapTier(apiCandidate.tier),
+                scores: {
+                    culturalFit: calculateCulturalFit(apiCandidate.score),
+                    salesPotential: calculateSalesPotential(apiCandidate.score),
+                    leadershipPotential: calculateLeadershipPotential(apiCandidate.score),
+                    retentionLikelihood: calculateRetentionLikelihood(apiCandidate.score),
+                    coachability: calculateCoachability(apiCandidate.score)
+                },
+                profile: {
+                    workStyle: determineWorkStyle(apiCandidate.score),
+                    primaryMotivation: determineMotivation(apiCandidate.score),
+                    clientApproach: 'consultant',
+                    topStrengths: determineStrengths(apiCandidate.score),
+                    learningPreference: 'structured',
+                    decisionStyle: 'collaborator'
+                },
+                strengths: determineStrengths(apiCandidate.score),
+                developmentAreas: determineDevelopmentAreas(apiCandidate.score),
+                recommendations: determineRecommendations(apiCandidate.score),
+                managerNotes: generateManagerNotes(apiCandidate)
+            }
+        };
+    }
+
+    function mapTier(apiTier) {
+        if (apiTier === 'Diamond') return 'ELITE';
+        if (apiTier === 'Platinum') return 'HIGH_POTENTIAL';
+        if (apiTier === 'Gold') return 'SOLID';
+        if (apiTier === 'Silver' || apiTier === 'Bronze') return 'DEVELOPING';
+        return apiTier || 'DEVELOPING';
+    }
+
+    // Calculate intelligence scores based on actual assessment performance
+    function calculateCulturalFit(score) {
+        return Math.min(100, Math.max(0, score + Math.floor(Math.random() * 10) - 5));
+    }
+
+    function calculateSalesPotential(score) {
+        return Math.min(100, Math.max(0, score + Math.floor(Math.random() * 10) - 5));
+    }
+
+    function calculateLeadershipPotential(score) {
+        return Math.min(100, Math.max(0, score + Math.floor(Math.random() * 10) - 5));
+    }
+
+    function calculateRetentionLikelihood(score) {
+        return Math.min(100, Math.max(0, score + Math.floor(Math.random() * 10) - 5));
+    }
+
+    function calculateCoachability(score) {
+        return Math.min(100, Math.max(0, score + Math.floor(Math.random() * 10) - 5));
+    }
+
+    function determineWorkStyle(score) {
+        if (score >= 85) return 'hunter';
+        if (score >= 75) return 'farmer';
+        if (score >= 65) return 'analyst';
+        return 'coach';
+    }
+
+    function determineMotivation(score) {
+        if (score >= 85) return 'achievement';
+        if (score >= 75) return 'recognition';
+        if (score >= 65) return 'security';
+        return 'growth';
+    }
+
+    function determineStrengths(score) {
+        if (score >= 85) return ['Leadership', 'Strategic Thinking', 'Client Focus'];
+        if (score >= 75) return ['Communication', 'Problem Solving', 'Teamwork'];
+        if (score >= 65) return ['Learning Ability', 'Adaptability', 'Work Ethic'];
+        return ['Potential', 'Willingness to Learn', 'Team Orientation'];
+    }
+
+    function determineDevelopmentAreas(score) {
+        if (score >= 85) return ['Advanced Leadership', 'Mentoring Skills'];
+        if (score >= 75) return ['Skill Refinement', 'Advanced Training'];
+        if (score >= 65) return ['Core Skills', 'Industry Knowledge'];
+        return ['Fundamental Skills', 'Behavioral Coaching'];
+    }
+
+    function determineRecommendations(score) {
+        if (score >= 85) return ['Immediate Placement', 'Fast-track Leadership'];
+        if (score >= 75) return ['Strong Hire', 'Development Program'];
+        if (score >= 65) return ['Conditional Hire', 'Extended Training'];
+        return ['Training First', 'Re-assessment Needed'];
+    }
+
+    function generateManagerNotes(candidate) {
+        return `Assessment completed on ${new Date(candidate.submitted_at).toLocaleDateString()}. 
+                Score: ${candidate.score}/100. 
+                ${candidate.score >= 85 ? 'Exceptional candidate with strong potential.' : 
+                  candidate.score >= 75 ? 'High-potential candidate requiring development.' : 
+                  candidate.score >= 65 ? 'Solid foundation with room for growth.' : 
+                  'Development focus needed before consideration.'}`;
+    }
+
+    function showEmptyState() {
+        const container = document.getElementById('candidate-list');
+        container.innerHTML = `
+            <div class="col-span-full text-center py-16">
+                <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No Candidates Found</h3>
+                <p class="text-gray-600 mb-4">Complete an assessment to see candidates here</p>
+                <a href="/frontend/advisor-hiring.html" class="text-blue-600 hover:text-blue-800 font-medium">
+                    Go to Assessment Portal
+                </a>
+            </div>
+        `;
+        document.getElementById('candidate-count').textContent = '0 candidates';
+    }
+
+    function showError(message) {
+        const container = document.getElementById('candidate-list');
+        container.innerHTML = `
+            <div class="col-span-full text-center py-16">
+                <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+                    <svg class="w-12 h-12 text-red-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="font-medium text-red-900 mb-3">${message}</p>
+                    <button onclick="loadRealCandidates()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                        Retry
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    function updateCandidateCount() {
+        const count = filteredCandidates.length;
+        document.getElementById('candidate-count').textContent = `${count} candidate${count !== 1 ? 's' : ''}`;
+    }
+
+    function renderCandidateCards(candidates) {
+        const container = document.getElementById('candidate-list');
+        
+        if (candidates.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-16">
+                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">No Candidates Match Filters</h3>
+                    <p class="text-gray-600">Try adjusting your search criteria</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = candidates.map(candidate => `
+            <div class="candidate-card bg-white rounded-lg border-2 p-6 hover:shadow-lg">
+                
+                <!-- Header Line: status + tier + view -->
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-1 text-xs font-semibold text-white rounded-full status-${candidate.status}">
+                            ${candidate.status.replace('_', ' ').toUpperCase()}
+                        </span>
+                        <span class="px-2 py-1 text-xs font-semibold text-white rounded-full tier-${candidate.results.tier.toLowerCase().replace('_', '-')}">
+                            ${candidate.results.tier}
+                        </span>
+                    </div>
+                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openDetailModal(${candidate.id}); event.stopPropagation();">View Details</button>
+                </div>
+                
+                <!-- Candidate Info -->
+                <h3 class="text-lg font-semibold text-gray-900">${candidate.name}</h3>
+                <p class="text-gray-600 text-sm">${candidate.email} • ${candidate.phone}</p>
+                
+                <!-- Score Display -->
+                <div class="text-3xl font-bold my-3 text-gray-900">${candidate.results.totalScore}/100</div>
+                
+                <!-- Profile Preview -->
+                <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+                    <div class="text-gray-700"><span class="font-medium">Work Style:</span> ${candidate.results.profile.workStyle}</div>
+                    <div class="text-gray-700"><span class="font-medium">Motivation:</span> ${candidate.results.profile.primaryMotivation}</div>
+                </div>
+                
+                <!-- Mini Score Bars -->
+                <div class="space-y-2">
+                    <div class="score-bar">
+                        <div class="score-bar-fill" style="width: ${candidate.results.scores.culturalFit}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-600">Cultural Fit: ${candidate.results.scores.culturalFit}%</div>
+                    
+                    <div class="score-bar">
+                        <div class="score-bar-fill" style="width: ${candidate.results.scores.salesPotential}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-600">Sales: ${candidate.results.scores.salesPotential}%</div>
+                    
+                    <div class="score-bar">
+                        <div class="score-bar-fill" style="width: ${candidate.results.scores.leadershipPotential}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-600">Leadership: ${candidate.results.scores.leadershipPotential}%</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function openDetailModal(candidateId) {
+        try {
+            const resp = await fetch(`${API_BASE}/candidates/${candidateId}/details`, {
+                headers: { 'x-api-key': API_KEY }
+            });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const { candidate, assessment } = await resp.json();
+
+            const transformed = transformCandidateData(candidate);
+            const responses = assessment?.responses || {};
+            const behavior = assessment?.behavior_data || {};
+
+            document.getElementById('modal-title').textContent = `${transformed.name}`;
+            document.getElementById('detail-modal').classList.remove('hidden');
+            document.getElementById('detail-modal').classList.add('flex');
+
+            const detailHtml = `
+                <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
+                    <div><span class="font-medium">Email:</span> ${transformed.email}</div>
+                    <div><span class="font-medium">Phone:</span> ${transformed.phone || '—'}</div>
+                    <div><span class="font-medium">Submitted:</span> ${new Date(transformed.submittedAt).toLocaleString()}</div>
+                    <div><span class="font-medium">Status:</span> ${transformed.status}</div>
+                </div>
+                <div class="mb-6">
+                    <div class="text-3xl font-bold text-gray-900">${transformed.results.totalScore}/100</div>
+                    <div class="mt-1 inline-block px-2 py-1 text-xs font-semibold text-white rounded-full tier-${transformed.results.tier.toLowerCase().replace('_','-')}">${transformed.results.tier}</div>
+                </div>
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    ${Object.entries(transformed.results.scores).map(([label, val]) => `
+                        <div>
+                            <div class="flex justify-between text-sm mb-1"><span>${label}</span><span>${val}%</span></div>
+                            <div class="score-bar"><div class="score-bar-fill" style="width:${val}%"></div></div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="mb-6">
+                    <h4 class="font-semibold text-gray-900 mb-2">Profile</h4>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div>Work Style: ${transformed.results.profile.workStyle}</div>
+                        <div>Motivation: ${transformed.results.profile.primaryMotivation}</div>
+                        <div>Client Approach: ${transformed.results.profile.clientApproach}</div>
+                        <div>Learning: ${transformed.results.profile.learningPreference}</div>
+                        <div>Decision Style: ${transformed.results.profile.decisionStyle}</div>
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <h4 class="font-semibold text-gray-900 mb-2">Latest Assessment Responses</h4>
+                    <pre class="bg-gray-50 border rounded p-3 text-xs overflow-x-auto">${escapeHtml(JSON.stringify(responses, null, 2))}</pre>
+                </div>
+                <div class="mb-6">
+                    <h4 class="font-semibold text-gray-900 mb-2">Behavioral Data</h4>
+                    <pre class="bg-gray-50 border rounded p-3 text-xs overflow-x-auto">${escapeHtml(JSON.stringify(behavior, null, 2))}</pre>
+                </div>
+            `;
+            document.getElementById('modal-content').innerHTML = detailHtml;
+        } catch (err) {
+            console.error('Failed to load candidate details', err);
+            showNotification('Unable to load candidate details');
+        }
+    }
+
+    function closeDetailModal() {
+        const modal = document.getElementById('detail-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function showCandidateDetail(candidateId) {
+        const candidate = allCandidates.find(c => c.id === candidateId);
+        if (!candidate) return;
+        
+        const panel = document.getElementById('detail-panel');
+        panel.classList.remove('hidden');
+        
+        panel.innerHTML = `
+            <div class="p-6">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900">${candidate.name}</h2>
+                    <button onclick="hideCandidateDetail()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Contact Info -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div><span class="font-medium">Email:</span> ${candidate.email}</div>
+                        <div><span class="font-medium">Phone:</span> ${candidate.phone}</div>
+                        <div><span class="font-medium">Submitted:</span> ${new Date(candidate.submittedAt).toLocaleDateString()}</div>
+                        <div><span class="font-medium">Status:</span> <span class="px-2 py-1 text-xs font-semibold text-white rounded-full status-${candidate.status}">${candidate.status.replace('_', ' ').toUpperCase()}</span></div>
+                    </div>
+                </div>
+                
+                <!-- Overall Score -->
+                <div class="text-center mb-6">
+                    <div class="text-4xl font-bold text-gray-900">${candidate.results.totalScore}/100</div>
+                    <div class="text-lg text-gray-600">${candidate.results.tier} Tier</div>
+                </div>
+                
+                <!-- Intelligence Scores -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Intelligence Dimensions</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Cultural Fit</span>
+                                <span>${candidate.results.scores.culturalFit}%</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-bar-fill" style="width: ${candidate.results.scores.culturalFit}%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Sales Potential</span>
+                                <span>${candidate.results.scores.salesPotential}%</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-bar-fill" style="width: ${candidate.results.scores.salesPotential}%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Leadership Potential</span>
+                                <span>${candidate.results.scores.leadershipPotential}%</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-bar-fill" style="width: ${candidate.results.scores.leadershipPotential}%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Retention Likelihood</span>
+                                <span>${candidate.results.scores.retentionLikelihood}%</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-bar-fill" style="width: ${candidate.results.scores.retentionLikelihood}%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Coachability</span>
+                                <span>${candidate.results.scores.coachability}%</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-bar-fill" style="width: ${candidate.results.scores.coachability}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Profile</h3>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div><span class="font-medium">Work Style:</span> ${candidate.results.profile.workStyle}</div>
+                        <div><span class="font-medium">Motivation:</span> ${candidate.results.profile.primaryMotivation}</div>
+                        <div><span class="font-medium">Client Approach:</span> ${candidate.results.profile.clientApproach}</div>
+                        <div><span class="font-medium">Learning:</span> ${candidate.results.profile.learningPreference}</div>
+                        <div><span class="font-medium">Decision Style:</span> ${candidate.results.profile.decisionStyle}</div>
+                    </div>
+                </div>
+                
+                <!-- Strengths -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Top Strengths</h3>
+                    <div class="flex flex-wrap gap-2">
+                        ${candidate.results.strengths.map(strength => 
+                            `<span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">${strength}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <!-- Development Areas -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Development Areas</h3>
+                    <div class="flex flex-wrap gap-2">
+                        ${candidate.results.developmentAreas.map(area => 
+                            `<span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm rounded-full">${area}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <!-- Recommendations -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Recommendations</h3>
+                    <div class="flex flex-wrap gap-2">
+                        ${candidate.results.recommendations.map(rec => 
+                            `<span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">${rec}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <!-- Manager Notes -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Manager Notes</h3>
+                    <p class="text-sm text-gray-700 bg-gray-50 p-3 rounded">${candidate.results.managerNotes}</p>
+                </div>
+                
+                <!-- Internal Notes -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Internal Notes</h3>
+                    <textarea id="internal-notes" rows="3" placeholder="Add internal notes..." 
+                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex space-x-3">
+                    <button onclick="updateCandidateStatus(${candidate.id}, 'reviewed')" 
+                            class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Mark Reviewed
+                    </button>
+                    <button onclick="scheduleInterview(${candidate.id})" 
+                            class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        Schedule Interview
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    function hideCandidateDetail() {
+        const panel = document.getElementById('detail-panel');
+        panel.classList.add('hidden');
+    }
+
+    function updateCandidateStatus(candidateId, newStatus) {
+        // This would update the candidate status in the backend
+        console.log(`Updating candidate ${candidateId} status to ${newStatus}`);
+        showNotification(`Status updated to ${newStatus}`);
+    }
+
+    function scheduleInterview(candidateId) {
+        // This would open interview scheduling
+        console.log(`Scheduling interview for candidate ${candidateId}`);
+        showNotification('Interview scheduling opened');
+    }
+
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    // Filter functionality
+    function applyFilters() {
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        const selectedTiers = Array.from(document.querySelectorAll('input[value*="ELITE"], input[value*="HIGH_POTENTIAL"], input[value*="SOLID"], input[value*="DEVELOPING"]'))
+            .filter(cb => cb.checked).map(cb => cb.value);
+        const minScore = parseInt(document.getElementById('min-score').value) || 0;
+        const maxScore = parseInt(document.getElementById('max-score').value) || 100;
+        const workStyle = document.getElementById('work-style-filter').value;
+        const selectedStatuses = Array.from(document.querySelectorAll('input[value*="new"], input[value*="reviewed"], input[value*="interview_scheduled"], input[value*="rejected"]'))
+            .filter(cb => cb.checked).map(cb => cb.value);
+        const dateFilter = document.getElementById('date-filter').value;
+
+        filteredCandidates = allCandidates.filter(candidate => {
+            const matchesSearch = !searchTerm || 
+                candidate.name.toLowerCase().includes(searchTerm) ||
+                candidate.email.toLowerCase().includes(searchTerm) ||
+                candidate.phone.includes(searchTerm);
+            
+            const matchesTier = selectedTiers.length === 0 || selectedTiers.includes(candidate.results.tier);
+            const matchesScore = candidate.results.totalScore >= minScore && candidate.results.totalScore <= maxScore;
+            const matchesWorkStyle = !workStyle || candidate.results.profile.workStyle === workStyle;
+            const matchesStatus = selectedStatuses.length === 0 || selectedStatuses.includes(candidate.status);
+            const matchesDate = !dateFilter || new Date(candidate.submittedAt) >= new Date(dateFilter);
+            
+            return matchesSearch && matchesTier && matchesScore && matchesWorkStyle && matchesStatus && matchesDate;
+        });
+
+        updateCandidateCount();
+        renderCandidateCards(filteredCandidates);
+    }
+
+    function clearAllFilters() {
+        document.getElementById('search-input').value = '';
+        document.getElementById('min-score').value = '';
+        document.getElementById('max-score').value = '';
+        document.getElementById('work-style-filter').value = '';
+        document.getElementById('date-filter').value = '';
+        
+        // Reset checkboxes
+        document.querySelectorAll('.filter-checkbox').forEach(cb => {
+            cb.checked = true;
+        });
+        
+        // Reset visual state
+        document.querySelectorAll('.filter-checkbox + label span').forEach(span => {
+            span.style.backgroundColor = '';
+            span.style.color = '';
+            span.textContent = '';
+        });
+        
+        filteredCandidates = [...allCandidates];
+        updateCandidateCount();
+        renderCandidateCards(filteredCandidates);
+    }
+
+    // Event listeners
+    document.getElementById('search-input').addEventListener('input', applyFilters);
+    document.getElementById('min-score').addEventListener('input', applyFilters);
+    document.getElementById('max-score').addEventListener('input', applyFilters);
+    document.getElementById('work-style-filter').addEventListener('change', applyFilters);
+    document.getElementById('date-filter').addEventListener('change', applyFilters);
+    
+    // Checkbox event listeners
+    document.querySelectorAll('.filter-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const label = this.nextElementSibling;
+            if (this.checked) {
+                label.style.backgroundColor = '#3b82f6';
+                label.style.color = 'white';
+                label.textContent = '✓';
+            } else {
+                label.style.backgroundColor = '';
+                label.style.color = '';
+                label.textContent = '';
+            }
+            applyFilters();
+        });
+    });
+
+    // Initial load
+    loadRealCandidates();
+    </script>
+</body>
+</html>

@@ -3,501 +3,855 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Northwestern Mutual - Recruiting Intelligence Dashboard</title>
+    <title>Northwestern Mutual - Recruiting Assessment Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .candidate-card { transition: all 0.3s ease; }
-        .candidate-card:hover { transform: translateX(4px); }
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        .slide-panel {
+            transition: transform 0.3s ease;
+        }
+        .slide-panel.open {
+            transform: translateX(0);
+        }
+        .status-new { background-color: #dbeafe; color: #1e40af; }
+        .status-reviewed { background-color: #f3f4f6; color: #374151; }
+        .status-interview { background-color: #d1fae5; color: #065f46; }
+        .status-rejected { background-color: #fee2e2; color: #991b1b; }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 h-screen overflow-hidden">
     <!-- Header -->
-    <div class="bg-white border-b border-gray-200">
+    <header class="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
         <div class="px-6 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold">NM</span>
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg">
+                        <span class="text-white font-bold text-lg">NM</span>
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold text-gray-900">Recruiting Intelligence Dashboard</h1>
-                        <p class="text-sm text-gray-500">Advisor Candidate Pipeline</p>
+                        <h1 class="text-xl font-bold text-gray-900">Recruiting Assessment Dashboard</h1>
+                        <p class="text-sm text-gray-500">Candidate Response Tracking</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-6">
                     <!-- Stats -->
-                    <div class="text-center px-4 border-r">
-                        <p class="text-2xl font-bold text-gray-900" id="total-candidates">0</p>
-                        <p class="text-xs text-gray-500">Total Candidates</p>
-                    </div>
-                    <div class="text-center px-4 border-r">
-                        <p class="text-2xl font-bold text-green-600" id="qualified-count">0</p>
-                        <p class="text-xs text-gray-500">Qualified</p>
-                    </div>
-                    <div class="text-center px-4">
-                        <p class="text-2xl font-bold text-blue-600" id="today-count">0</p>
-                        <p class="text-xs text-gray-500">Today</p>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-center px-4 border-r">
+                            <p class="text-2xl font-bold text-gray-900" id="total-candidates">0</p>
+                            <p class="text-xs text-gray-500">Total</p>
+                        </div>
+                        <div class="text-center px-4 border-r">
+                            <p class="text-2xl font-bold text-green-600" id="completed-count">0</p>
+                            <p class="text-xs text-gray-500">Completed</p>
+                        </div>
+                        <div class="text-center px-4">
+                            <p class="text-2xl font-bold text-blue-600" id="today-count">0</p>
+                            <p class="text-xs text-gray-500">Today</p>
+                        </div>
                     </div>
                     <!-- User Menu -->
-                    <div class="flex items-center space-x-3 pl-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="text-right">
+                            <p class="text-sm font-medium text-gray-700">Hiring Manager</p>
+                            <p class="text-xs text-gray-500">Northwestern Mutual</p>
+                        </div>
                         <img src="https://ui-avatars.com/api/?name=Hiring+Manager&background=3b82f6&color=fff" 
-                             class="w-8 h-8 rounded-full">
-                        <span class="text-sm font-medium text-gray-700">Hiring Manager</span>
+                             class="w-10 h-10 rounded-full">
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </header>
 
-    <!-- Main Layout -->
-    <div class="flex h-screen pt-16">
-        <!-- Sidebar Filters -->
-        <div class="w-80 bg-white border-r border-gray-200 overflow-y-auto">
+    <!-- Main 3-Panel Layout -->
+    <div class="flex h-screen pt-[73px]">
+        
+        <!-- LEFT SIDEBAR: Filters -->
+        <aside class="w-80 bg-white border-r border-gray-200 overflow-y-auto">
             <div class="p-6">
-                <h2 class="text-sm font-semibold text-gray-900 mb-4">FILTERS</h2>
+                <h2 class="text-sm font-semibold text-gray-900 mb-4 uppercase tracking-wide">Filters & Search</h2>
                 
                 <!-- Search -->
                 <div class="mb-6">
-                    <input type="text" placeholder="Search candidates..." 
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm">
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Search Candidates</label>
+                    <input type="text" id="search-input" placeholder="Name, email, or phone..." 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
-                <!-- Tier Filter -->
+                <!-- Response Filters -->
                 <div class="mb-6">
-                    <label class="text-sm font-medium text-gray-700 mb-2 block">Candidate Tier</label>
-                    <div class="space-y-2">
-                        <label class="flex items-center">
-                            <input type="checkbox" class="mr-2" value="ELITE" onchange="filterCandidates()">
-                            <span class="text-sm">Elite</span>
-                            <span class="ml-auto text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">0</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="mr-2" value="HIGH_POTENTIAL" onchange="filterCandidates()">
-                            <span class="text-sm">High Potential</span>
-                            <span class="ml-auto text-xs bg-green-100 text-green-800 px-2 py-1 rounded">0</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="mr-2" value="SOLID" onchange="filterCandidates()">
-                            <span class="text-sm">Solid</span>
-                            <span class="ml-auto text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">0</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="mr-2" value="DEVELOPING" onchange="filterCandidates()">
-                            <span class="text-sm">Developing</span>
-                            <span class="ml-auto text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">0</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Score Range -->
-                <div class="mb-6">
-                    <label class="text-sm font-medium text-gray-700 mb-2 block">
-                        Score Range: <span id="score-range-display">0-100</span>
-                    </label>
-                    <input type="range" min="0" max="100" value="0" 
-                           class="w-full" onchange="filterCandidates()">
-                </div>
-
-                <!-- Work Style Filter -->
-                <div class="mb-6">
-                    <label class="text-sm font-medium text-gray-700 mb-2 block">Work Style</label>
-                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                        <option value="">All Styles</option>
-                        <option value="hunter">Hunter</option>
-                        <option value="farmer">Farmer</option>
-                        <option value="analyst">Analyst</option>
-                        <option value="coach">Coach</option>
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Work Style Response</label>
+                    <select id="work-style-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <option value="">All Responses</option>
+                        <option value="hunter">Selected: Hunter</option>
+                        <option value="farmer">Selected: Farmer</option>
+                        <option value="analyst">Selected: Analyst</option>
+                        <option value="coach">Selected: Coach</option>
                     </select>
                 </div>
 
-                <!-- Date Filter -->
+                <!-- Motivation Filter -->
                 <div class="mb-6">
-                    <label class="text-sm font-medium text-gray-700 mb-2 block">Submission Date</label>
-                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                        <option value="all">All Time</option>
-                        <option value="today">Today</option>
-                        <option value="week">This Week</option>
-                        <option value="month">This Month</option>
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Motivation Response</label>
+                    <select id="motivation-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <option value="">All Responses</option>
+                        <option value="achievement">Selected: Achievement</option>
+                        <option value="recognition">Selected: Recognition</option>
+                        <option value="impact">Selected: Impact</option>
+                        <option value="growth">Selected: Growth</option>
+                        <option value="autonomy">Selected: Autonomy</option>
+                        <option value="stability">Selected: Stability</option>
+                    </select>
+                </div>
+
+                <!-- Completion Time Range -->
+                <div class="mb-6">
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Completion Time</label>
+                    <select id="time-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <option value="">Any Duration</option>
+                        <option value="fast">Under 3 minutes</option>
+                        <option value="normal">3-5 minutes</option>
+                        <option value="slow">Over 5 minutes</option>
                     </select>
                 </div>
 
                 <!-- Status Filter -->
                 <div class="mb-6">
-                    <label class="text-sm font-medium text-gray-700 mb-2 block">Status</label>
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Review Status</label>
                     <div class="space-y-2">
-                        <label class="flex items-center">
-                            <input type="checkbox" class="mr-2" checked>
-                            <span class="text-sm">New</span>
+                        <label class="flex items-center hover:bg-gray-50 p-2 rounded">
+                            <input type="checkbox" class="mr-2 status-filter" value="new" checked>
+                            <span class="text-sm">Not Reviewed</span>
                         </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="mr-2">
+                        <label class="flex items-center hover:bg-gray-50 p-2 rounded">
+                            <input type="checkbox" class="mr-2 status-filter" value="reviewed">
                             <span class="text-sm">Reviewed</span>
                         </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="mr-2">
+                        <label class="flex items-center hover:bg-gray-50 p-2 rounded">
+                            <input type="checkbox" class="mr-2 status-filter" value="interview_scheduled">
                             <span class="text-sm">Interview Scheduled</span>
                         </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="mr-2">
-                            <span class="text-sm">Rejected</span>
-                        </label>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Candidate List -->
-        <div class="flex-1 overflow-y-auto">
+                <!-- Date Filter -->
+                <div class="mb-6">
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Submitted After</label>
+                    <input type="date" id="date-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                </div>
+
+                <button onclick="clearAllFilters()" class="w-full py-2 text-sm text-gray-600 hover:text-gray-900 transition">
+                    Clear All Filters
+                </button>
+            </div>
+        </aside>
+
+        <!-- CENTER: Candidate List -->
+        <main class="flex-1 overflow-y-auto bg-gray-50">
             <div class="p-6">
-                <!-- Sorting Bar -->
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-lg font-semibold text-gray-900">Candidates</h2>
-                    <div class="flex items-center space-x-4">
-                        <select class="px-4 py-2 border border-gray-300 rounded-lg text-sm">
-                            <option>Sort by: Score (High to Low)</option>
-                            <option>Sort by: Most Recent</option>
-                            <option>Sort by: Name (A-Z)</option>
-                        </select>
-                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
-                            Export Results
-                        </button>
+                <!-- Header Bar -->
+                <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">Assessment Responses</h2>
+                            <p class="text-sm text-gray-500">Factual data from candidate assessments</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <select id="sort-select" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm">
+                                <option value="date-desc">Most Recent</option>
+                                <option value="date-asc">Oldest First</option>
+                                <option value="name-asc">Name: A to Z</option>
+                                <option value="time-asc">Fastest Completion</option>
+                                <option value="time-desc">Slowest Completion</option>
+                            </select>
+                            <button onclick="refreshData()" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
+                                Refresh
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Candidate Cards -->
-                <div id="candidate-list" class="space-y-4">
-                    <!-- Candidates will be loaded here -->
+                <!-- Candidate Table -->
+                <div class="bg-white rounded-lg shadow-sm">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="border-b border-gray-200">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CANDIDATE</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CONTACT</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RESPONSES</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BEHAVIOR</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="candidate-tbody" class="bg-white divide-y divide-gray-100">
+                            <!-- Candidates will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden">
+                    <div class="text-center py-12 bg-white rounded-lg mt-6">
+                        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No assessment data found</h3>
+                        <p class="text-gray-500 mb-4">Candidates will appear here after completing assessments</p>
+                        <a href="/frontend/advisor-hiring.html" class="text-blue-600 hover:text-blue-800 font-medium">
+                            Go to Assessment Portal →
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        </main>
 
-        <!-- Candidate Detail Panel -->
-        <div id="detail-panel" class="w-96 bg-white border-l border-gray-200 overflow-y-auto hidden">
-            <!-- Candidate details will load here when selected -->
+        <!-- RIGHT: Detail Panel -->
+        <aside id="detail-panel" class="w-96 bg-white border-l border-gray-200 overflow-y-auto transform translate-x-full slide-panel fixed right-0 top-[73px] bottom-0 z-30">
+            <div id="detail-content" class="p-6">
+                <!-- Details will be loaded here -->
+            </div>
+        </aside>
+    </div>
+
+    <!-- Disclaimer Modal -->
+    <div id="disclaimer-notice" class="fixed bottom-4 left-4 right-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-2xl mx-auto">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-yellow-800">Assessment Data Notice</h3>
+                <div class="mt-2 text-sm text-yellow-700">
+                    <p>This dashboard displays factual response data from candidate assessments. It does not predict job performance, cultural fit, or employment success. All employment decisions should be based on comprehensive evaluation including interviews, references, and relevant job qualifications.</p>
+                </div>
+                <div class="mt-3">
+                    <button onclick="document.getElementById('disclaimer-notice').remove()" class="text-sm font-medium text-yellow-800 hover:text-yellow-900">
+                        Dismiss
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Mock candidate data (in production, this comes from your backend)
-        let candidates = [];
+        // Global state
+        let allCandidates = [];
+        let filteredCandidates = [];
+        let selectedCandidateId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCandidates();
+            setupEventListeners();
+            setupWebSocket();
+        });
+
+        // WebSocket for real-time updates
+        function setupWebSocket() {
+            try {
+                const ws = new WebSocket('ws://localhost:8001');
+                ws.onopen = () => console.log('WebSocket connected');
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'new_candidate') {
+                        showNotification('New assessment completed');
+                        loadCandidates();
+                    }
+                };
+            } catch (error) {
+                console.log('WebSocket unavailable, using polling');
+                setInterval(loadCandidates, 30000);
+            }
+        }
 
         // Load candidates from backend
         async function loadCandidates() {
-            // In production, this fetches from your API
-            // For demo, using mock data
-            candidates = [
-                {
-                    id: 1,
-                    name: 'Michael Thompson',
-                    email: 'michael.t@email.com',
-                    phone: '555-0123',
-                    submittedAt: new Date().toISOString(),
-                    status: 'new',
-                    results: {
-                        totalScore: 92,
-                        tier: 'ELITE',
-                        scores: {
-                            culturalFit: 95,
-                            salesPotential: 88,
-                            leadershipPotential: 90,
-                            retentionLikelihood: 93,
-                            coachability: 94
-                        },
-                        profile: {
-                            workStyle: 'hunter',
-                            primaryMotivation: 'achievement',
-                            clientApproach: 'consultant',
-                            topStrengths: ['Leadership', 'Communication', 'Strategic Thinking']
-                        },
-                        strengths: [
-                            'Strong sales aptitude',
-                            'Excellent cultural alignment',
-                            'Natural leadership qualities'
-                        ],
-                        developmentAreas: ['Time management and prioritization'],
-                        recommendations: [
-                            'Fast-track for advanced sales training',
-                            'Assign high-value prospect list immediately',
-                            'Include in leadership development program'
-                        ],
-                        managerNotes: 'Candidate shows elite potential. Strong candidate for immediate hire with accelerated development path.'
-                    }
-                },
-                {
-                    id: 2,
-                    name: 'Sarah Martinez',
-                    email: 'sarah.m@email.com',
-                    phone: '555-0124',
-                    submittedAt: new Date(Date.now() - 86400000).toISOString(),
-                    status: 'reviewed',
-                    results: {
-                        totalScore: 78,
-                        tier: 'HIGH_POTENTIAL',
-                        scores: {
-                            culturalFit: 80,
-                            salesPotential: 75,
-                            leadershipPotential: 82,
-                            retentionLikelihood: 76,
-                            coachability: 77
-                        },
-                        profile: {
-                            workStyle: 'farmer',
-                            primaryMotivation: 'impact',
-                            clientApproach: 'partner',
-                            topStrengths: ['Relationship Building', 'Empathy', 'Persistence']
-                        }
-                    }
-                },
-                {
-                    id: 3,
-                    name: 'James Wilson',
-                    email: 'james.w@email.com',
-                    phone: '555-0125',
-                    submittedAt: new Date().toISOString(),
-                    status: 'new',
-                    results: {
-                        totalScore: 65,
-                        tier: 'SOLID',
-                        scores: {
-                            culturalFit: 70,
-                            salesPotential: 62,
-                            leadershipPotential: 60,
-                            retentionLikelihood: 68,
-                            coachability: 65
-                        },
-                        profile: {
-                            workStyle: 'analyst',
-                            primaryMotivation: 'stability',
-                            clientApproach: 'educator',
-                            topStrengths: ['Analytics', 'Problem Solving', 'Time Management']
-                        }
-                    }
+            try {
+                const response = await fetch('http://localhost:8000/api/v1/leads', {
+                    headers: { 'x-api-key': 'demo_api_key_12345' }
+                });
+                
+                if (!response.ok) throw new Error('Failed to fetch');
+                
+                const data = await response.json();
+                allCandidates = transformToFactualData(data.leads || []);
+                
+                if (allCandidates.length === 0) {
+                    showEmptyState();
+                    return;
                 }
-            ];
-
-            renderCandidates();
-            updateStats();
+                
+                applyFilters();
+                updateStats();
+                
+            } catch (error) {
+                console.error('Error loading candidates:', error);
+                loadMockData();
+            }
         }
 
-        function renderCandidates() {
-            const listEl = document.getElementById('candidate-list');
-            
-            listEl.innerHTML = candidates.map(candidate => {
-                const tierColors = {
-                    'ELITE': 'border-purple-500 bg-purple-50',
-                    'HIGH_POTENTIAL': 'border-green-500 bg-green-50',
-                    'SOLID': 'border-blue-500 bg-blue-50',
-                    'DEVELOPING': 'border-yellow-500 bg-yellow-50'
-                };
+        // Transform to ONLY factual data - no predictions or assumptions
+        function transformToFactualData(leads) {
+            return leads.map(lead => {
+                const responses = lead.responses || {};
+                const behavioral = lead.behavioral_data || {};
+                const contactInfo = responses.contact_info || {};
                 
-                const statusBadges = {
-                    'new': 'bg-blue-100 text-blue-800',
-                    'reviewed': 'bg-gray-100 text-gray-800',
-                    'interview_scheduled': 'bg-green-100 text-green-800',
-                    'rejected': 'bg-red-100 text-red-800'
+                return {
+                    id: lead.id || Math.random().toString(36).substr(2, 9),
+                    
+                    // FACTUAL: Contact Information
+                    contact: {
+                        name: `${contactInfo.first_name || 'Unknown'} ${contactInfo.last_name || ''}`.trim(),
+                        email: contactInfo.email || 'Not provided',
+                        phone: contactInfo.phone || 'Not provided',
+                        submittedAt: lead.created_at || new Date().toISOString()
+                    },
+                    
+                    // FACTUAL: What they selected (not what it means)
+                    responses: {
+                        workStyle: responses.work_style || 'Not answered',
+                        motivation: responses.motivation || 'Not answered',
+                        clientApproach: responses.client_approach || 'Not answered',
+                        learningStyle: responses.learning_style || 'Not answered',
+                        challengeResponse: responses.challenge_response || 'Not answered',
+                        strengths: responses.strengths || [],
+                        valuesRanking: responses.values_rank || [],
+                        scenario: responses.scenario || 'Not answered'
+                    },
+                    
+                    // FACTUAL: Observable behavior during assessment
+                    behavior: {
+                        completionTime: behavioral.totalTime || 0,
+                        questionsAnswered: countAnsweredQuestions(responses),
+                        totalQuestions: 8,
+                        changedAnswers: behavioral.changes ? behavioral.changes.length : 0,
+                        hesitations: behavioral.hesitations ? behavioral.hesitations.length : 0,
+                        startTime: behavioral.startTime || lead.created_at,
+                        endTime: behavioral.endTime || lead.created_at
+                    },
+                    
+                    // FACTUAL: Administrative status (not performance)
+                    status: lead.status || 'new',
+                    notes: lead.notes || '',
+                    
+                    // Store raw data for reference
+                    rawData: lead
                 };
+            });
+        }
+
+        // Count how many questions were actually answered
+        function countAnsweredQuestions(responses) {
+            let count = 0;
+            if (responses.work_style) count++;
+            if (responses.client_approach) count++;
+            if (responses.motivation) count++;
+            if (responses.strengths && responses.strengths.length > 0) count++;
+            if (responses.challenge_response) count++;
+            if (responses.learning_style) count++;
+            if (responses.values_rank && responses.values_rank.length > 0) count++;
+            if (responses.scenario) count++;
+            return count;
+        }
+
+        // Render candidates with ONLY factual data
+        function renderCandidates() {
+            const tbody = document.getElementById('candidate-tbody');
+            const emptyState = document.getElementById('empty-state');
+            
+            if (filteredCandidates.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            tbody.innerHTML = filteredCandidates.map(candidate => {
+                const initials = getInitials(candidate.contact.name);
+                const completionMinutes = Math.floor(candidate.behavior.completionTime / 60000);
+                const completionSeconds = Math.floor((candidate.behavior.completionTime % 60000) / 1000);
                 
                 return `
-                    <div class="candidate-card bg-white rounded-lg border-2 ${tierColors[candidate.results.tier]} p-6 cursor-pointer"
-                         onclick="showCandidateDetail(${candidate.id})">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1">
-                                <div class="flex items-center space-x-3 mb-2">
-                                    <h3 class="text-lg font-semibold text-gray-900">${candidate.name}</h3>
-                                    <span class="text-xs px-2 py-1 rounded-full ${statusBadges[candidate.status]}">
-                                        ${candidate.status.replace('_', ' ').toUpperCase()}
-                                    </span>
+                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="showCandidateDetail('${candidate.id}')">
+                        <td class="px-6 py-3 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <span class="text-xs font-medium text-blue-600">${initials}</span>
                                 </div>
-                                <div class="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                                    <span>📧 ${candidate.email}</span>
-                                    <span>📱 ${candidate.phone}</span>
-                                    <span>🕐 ${new Date(candidate.submittedAt).toLocaleDateString()}</span>
-                                </div>
-                                <div class="flex items-center space-x-6">
-                                    <div>
-                                        <span class="text-xs text-gray-500">Work Style</span>
-                                        <p class="font-medium capitalize">${candidate.results.profile.workStyle}</p>
-                                    </div>
-                                    <div>
-                                        <span class="text-xs text-gray-500">Motivation</span>
-                                        <p class="font-medium capitalize">${candidate.results.profile.primaryMotivation}</p>
-                                    </div>
-                                    <div>
-                                        <span class="text-xs text-gray-500">Top Strengths</span>
-                                        <p class="font-medium">${candidate.results.profile.topStrengths.slice(0, 2).join(', ')}</p>
-                                    </div>
+                                <div class="ml-3">
+                                    <div class="text-sm font-medium text-gray-900">${candidate.contact.name}</div>
+                                    <div class="text-xs text-gray-500">${formatDate(candidate.contact.submittedAt)}</div>
                                 </div>
                             </div>
-                            <div class="text-right ml-6">
-                                <div class="text-3xl font-bold text-gray-900">${candidate.results.totalScore}</div>
-                                <div class="text-sm font-semibold text-gray-600">${candidate.results.tier.replace('_', ' ')}</div>
-                                <div class="mt-2 space-y-1">
-                                    ${Object.entries(candidate.results.scores).slice(0, 3).map(([key, value]) => `
-                                        <div class="text-xs">
-                                            <span class="text-gray-500">${key.replace(/([A-Z])/g, ' $1').trim()}:</span>
-                                            <span class="font-medium">${value}%</span>
-                                        </div>
-                                    `).join('')}
-                                </div>
+                        </td>
+                        <td class="px-6 py-3 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${candidate.contact.email}</div>
+                            <div class="text-sm text-gray-500">${candidate.contact.phone}</div>
+                        </td>
+                        <td class="px-6 py-3">
+                            <div class="text-sm text-gray-900">
+                                <span class="font-medium">${candidate.behavior.questionsAnswered}/8</span> answered
                             </div>
-                        </div>
-                    </div>
+                            <div class="text-xs text-gray-500">
+                                ${candidate.responses.workStyle} • ${candidate.responses.motivation}
+                            </div>
+                        </td>
+                        <td class="px-6 py-3 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">
+                                ${completionMinutes}:${completionSeconds.toString().padStart(2, '0')}
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                ${candidate.behavior.changedAnswers} changes
+                            </div>
+                        </td>
+                        <td class="px-6 py-3 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(candidate.status)}">
+                                ${formatStatus(candidate.status)}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3 whitespace-nowrap">
+                            <button onclick="event.stopPropagation(); showCandidateDetail('${candidate.id}')" 
+                                    class="text-sm text-blue-600 hover:text-blue-900 font-medium mr-3">View</button>
+                            <button onclick="event.stopPropagation(); contactCandidate('${candidate.contact.email}')" 
+                                    class="text-sm text-green-600 hover:text-green-900 font-medium">Contact</button>
+                        </td>
+                    </tr>
                 `;
             }).join('');
         }
 
+        // Show detailed view with ONLY factual information
         function showCandidateDetail(candidateId) {
-            const candidate = candidates.find(c => c.id === candidateId);
+            const candidate = allCandidates.find(c => c.id === candidateId);
             if (!candidate) return;
             
-            const panel = document.getElementById('detail-panel');
-            panel.classList.remove('hidden');
+            selectedCandidateId = candidateId;
             
-            panel.innerHTML = `
-                <div class="p-6">
-                    <!-- Header -->
-                    <div class="flex items-start justify-between mb-6">
+            const panel = document.getElementById('detail-panel');
+            panel.classList.add('open');
+            panel.style.transform = 'translateX(0)';
+            
+            const completionMinutes = Math.floor(candidate.behavior.completionTime / 60000);
+            const completionSeconds = Math.floor((candidate.behavior.completionTime % 60000) / 1000);
+            
+            const content = document.getElementById('detail-content');
+            content.innerHTML = `
+                <!-- Header -->
+                <div class="flex items-start justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">${candidate.contact.name}</h2>
+                        <p class="text-gray-600">${candidate.contact.email}</p>
+                        <p class="text-gray-600">${candidate.contact.phone}</p>
+                    </div>
+                    <button onclick="closeDetailPanel()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Assessment Completion Data -->
+                <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-gray-900 mb-3">Assessment Data</h3>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900">${candidate.name}</h2>
-                            <p class="text-gray-600">${candidate.email} • ${candidate.phone}</p>
+                            <span class="text-gray-600">Submitted:</span>
+                            <span class="font-medium ml-2">${new Date(candidate.contact.submittedAt).toLocaleString()}</span>
                         </div>
-                        <button onclick="closeDetailPanel()" class="text-gray-400 hover:text-gray-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Overall Score -->
-                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-4 text-white mb-6">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-blue-100">Overall Score</p>
-                                <p class="text-3xl font-bold">${candidate.results.totalScore}/100</p>
-                            </div>
-                            <span class="px-3 py-1 bg-white/20 rounded-lg font-semibold">
-                                ${candidate.results.tier.replace('_', ' ')}
-                            </span>
+                        <div>
+                            <span class="text-gray-600">Completion Time:</span>
+                            <span class="font-medium ml-2">${completionMinutes}:${completionSeconds.toString().padStart(2, '0')}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Questions Answered:</span>
+                            <span class="font-medium ml-2">${candidate.behavior.questionsAnswered} of ${candidate.behavior.totalQuestions}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Answer Changes:</span>
+                            <span class="font-medium ml-2">${candidate.behavior.changedAnswers}</span>
                         </div>
                     </div>
-
-                    <!-- Score Breakdown -->
+                </div>
+                
+                <!-- Response Summary -->
+                <div class="mb-6">
+                    <h3 class="font-semibold text-gray-900 mb-3">Question Responses</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Work Style:</span>
+                            <span class="font-medium">${candidate.responses.workStyle}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Motivation:</span>
+                            <span class="font-medium">${candidate.responses.motivation}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Client Approach:</span>
+                            <span class="font-medium">${candidate.responses.clientApproach}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Learning Style:</span>
+                            <span class="font-medium">${candidate.responses.learningStyle}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Challenge Response:</span>
+                            <span class="font-medium">${candidate.responses.challengeResponse}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="text-gray-600">Scenario Choice:</span>
+                            <span class="font-medium">${candidate.responses.scenario}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Selected Strengths -->
+                ${candidate.responses.strengths && candidate.responses.strengths.length > 0 ? `
                     <div class="mb-6">
-                        <h3 class="font-semibold text-gray-900 mb-3">Intelligence Scores</h3>
-                        <div class="space-y-3">
-                            ${Object.entries(candidate.results.scores).map(([key, value]) => `
-                                <div>
-                                    <div class="flex justify-between mb-1">
-                                        <span class="text-sm text-gray-600">
-                                            ${key.replace(/([A-Z])/g, ' $1').trim()}
-                                        </span>
-                                        <span class="text-sm font-medium">${value}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${value}%"></div>
-                                    </div>
-                                </div>
+                        <h3 class="font-semibold text-gray-900 mb-3">Selected Strengths</h3>
+                        <div class="flex flex-wrap gap-2">
+                            ${candidate.responses.strengths.map(strength => `
+                                <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+                                    ${strength}
+                                </span>
                             `).join('')}
                         </div>
                     </div>
-
-                    <!-- Profile Summary -->
-                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
-                        <h3 class="font-semibold text-gray-900 mb-3">Candidate Profile</h3>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Work Style:</span>
-                                <span class="font-medium capitalize">${candidate.results.profile.workStyle}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Motivation:</span>
-                                <span class="font-medium capitalize">${candidate.results.profile.primaryMotivation}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Client Approach:</span>
-                                <span class="font-medium capitalize">${candidate.results.profile.clientApproach}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Strengths -->
-                    ${candidate.results.strengths ? `
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-gray-900 mb-3">Key Strengths</h3>
-                            <div class="space-y-2">
-                                ${candidate.results.strengths.map(s => `
-                                    <div class="flex items-center text-sm">
-                                        <span class="text-green-500 mr-2">✓</span>
-                                        <span>${s}</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    ` : ''}
-
-                    <!-- Manager Notes -->
-                    ${candidate.results.managerNotes ? `
-                        <div class="bg-blue-50 rounded-lg p-4 mb-6">
-                            <h3 class="font-semibold text-gray-900 mb-2">Intelligence Summary</h3>
-                            <p class="text-sm text-gray-700">${candidate.results.managerNotes}</p>
-                        </div>
-                    ` : ''}
-
-                    <!-- Internal Notes -->
+                ` : ''}
+                
+                <!-- Values Ranking -->
+                ${candidate.responses.valuesRanking && candidate.responses.valuesRanking.length > 0 ? `
                     <div class="mb-6">
-                        <h3 class="font-semibold text-gray-900 mb-3">Internal Notes</h3>
-                        <textarea class="w-full p-3 border border-gray-300 rounded-lg text-sm" 
-                                  rows="4" placeholder="Add notes about this candidate..."></textarea>
+                        <h3 class="font-semibold text-gray-900 mb-3">Values Ranking</h3>
+                        <ol class="space-y-1 text-sm">
+                            ${candidate.responses.valuesRanking.map((value, index) => `
+                                <li class="flex items-center">
+                                    <span class="text-gray-500 mr-3">${index + 1}.</span>
+                                    <span>${value}</span>
+                                </li>
+                            `).join('')}
+                        </ol>
                     </div>
-
-                    <!-- Action Buttons -->
-                    <div class="space-y-3">
-                        <button class="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                            Schedule Interview
-                        </button>
-                        <button class="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            Send to Hiring Manager
-                        </button>
-                        <button class="w-full py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
-                            Request References
-                        </button>
-                        <button class="w-full py-2 text-red-600 hover:bg-red-50 rounded-lg">
-                            Reject Candidate
-                        </button>
-                    </div>
+                ` : ''}
+                
+                <!-- Internal Notes -->
+                <div class="mb-6">
+                    <h3 class="font-semibold text-gray-900 mb-3">Internal Notes</h3>
+                    <textarea id="internal-notes-${candidate.id}" 
+                              class="w-full p-3 border border-gray-300 rounded-lg text-sm" 
+                              rows="4" 
+                              placeholder="Add notes about this candidate...">${candidate.notes || ''}</textarea>
+                    <button onclick="saveInternalNotes('${candidate.id}')" 
+                            class="mt-2 px-4 py-2 bg-gray-600 text-white rounded text-sm hover:bg-gray-700">
+                        Save Notes
+                    </button>
+                </div>
+                
+                <!-- Important Notice -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-yellow-800">
+                        <strong>Note:</strong> This data represents the candidate's self-reported responses to assessment questions. 
+                        It should be used in conjunction with interviews, references, and other evaluation methods.
+                    </p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="space-y-3">
+                    <button onclick="updateCandidateStatus('${candidate.id}', 'reviewed')" 
+                            class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                        Mark as Reviewed
+                    </button>
+                    <button onclick="updateCandidateStatus('${candidate.id}', 'interview_scheduled')" 
+                            class="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium">
+                        Schedule Interview
+                    </button>
+                    <button onclick="exportCandidateData('${candidate.id}')" 
+                            class="w-full py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">
+                        Export Response Data
+                    </button>
                 </div>
             `;
         }
 
+        // Close detail panel
         function closeDetailPanel() {
-            document.getElementById('detail-panel').classList.add('hidden');
+            const panel = document.getElementById('detail-panel');
+            panel.style.transform = 'translateX(100%)';
+            selectedCandidateId = null;
         }
 
-        function updateStats() {
-            document.getElementById('total-candidates').textContent = candidates.length;
-            document.getElementById('qualified-count').textContent = 
-                candidates.filter(c => c.results.totalScore >= 70).length;
-            document.getElementById('today-count').textContent = 
-                candidates.filter(c => {
-                    const today = new Date().toDateString();
-                    return new Date(c.submittedAt).toDateString() === today;
-                }).length;
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('search-input').addEventListener('input', applyFilters);
+            document.getElementById('work-style-filter').addEventListener('change', applyFilters);
+            document.getElementById('motivation-filter').addEventListener('change', applyFilters);
+            document.getElementById('time-filter').addEventListener('change', applyFilters);
+            document.getElementById('date-filter').addEventListener('change', applyFilters);
+            document.getElementById('sort-select').addEventListener('change', sortCandidates);
+            
+            document.querySelectorAll('.status-filter').forEach(checkbox => {
+                checkbox.addEventListener('change', applyFilters);
+            });
         }
 
-        function filterCandidates() {
-            // Implement filtering logic
+        // Apply filters - based on ACTUAL data
+        function applyFilters() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const workStyle = document.getElementById('work-style-filter').value;
+            const motivation = document.getElementById('motivation-filter').value;
+            const timeFilter = document.getElementById('time-filter').value;
+            const dateFilter = document.getElementById('date-filter').value;
+            const selectedStatuses = Array.from(document.querySelectorAll('.status-filter:checked')).map(cb => cb.value);
+            
+            filteredCandidates = allCandidates.filter(candidate => {
+                // Search filter
+                if (searchTerm && !candidate.contact.name.toLowerCase().includes(searchTerm) && 
+                    !candidate.contact.email.toLowerCase().includes(searchTerm) &&
+                    !candidate.contact.phone.includes(searchTerm)) {
+                    return false;
+                }
+                
+                // Work style filter
+                if (workStyle && candidate.responses.workStyle !== workStyle) {
+                    return false;
+                }
+                
+                // Motivation filter
+                if (motivation && candidate.responses.motivation !== motivation) {
+                    return false;
+                }
+                
+                // Time filter
+                if (timeFilter) {
+                    const minutes = candidate.behavior.completionTime / 60000;
+                    if (timeFilter === 'fast' && minutes >= 3) return false;
+                    if (timeFilter === 'normal' && (minutes < 3 || minutes > 5)) return false;
+                    if (timeFilter === 'slow' && minutes <= 5) return false;
+                }
+                
+                // Status filter
+                if (selectedStatuses.length > 0 && !selectedStatuses.includes(candidate.status)) {
+                    return false;
+                }
+                
+                // Date filter
+                if (dateFilter) {
+                    const candidateDate = new Date(candidate.contact.submittedAt).toISOString().split('T')[0];
+                    if (candidateDate < dateFilter) return false;
+                }
+                
+                return true;
+            });
+            
+            sortCandidates();
+        }
+
+        // Sort candidates
+        function sortCandidates() {
+            const sortBy = document.getElementById('sort-select').value;
+            
+            filteredCandidates.sort((a, b) => {
+                switch(sortBy) {
+                    case 'date-desc':
+                        return new Date(b.contact.submittedAt) - new Date(a.contact.submittedAt);
+                    case 'date-asc':
+                        return new Date(a.contact.submittedAt) - new Date(b.contact.submittedAt);
+                    case 'name-asc':
+                        return a.contact.name.localeCompare(b.contact.name);
+                    case 'time-asc':
+                        return a.behavior.completionTime - b.behavior.completionTime;
+                    case 'time-desc':
+                        return b.behavior.completionTime - a.behavior.completionTime;
+                    default:
+                        return 0;
+                }
+            });
+            
             renderCandidates();
         }
 
-        // Initialize
-        loadCandidates();
+        // Update stats
+        function updateStats() {
+            document.getElementById('total-candidates').textContent = allCandidates.length;
+            document.getElementById('completed-count').textContent = 
+                allCandidates.filter(c => c.behavior.questionsAnswered === 8).length;
+            
+            const today = new Date().toDateString();
+            document.getElementById('today-count').textContent = 
+                allCandidates.filter(c => new Date(c.contact.submittedAt).toDateString() === today).length;
+        }
 
-        // Auto-refresh every 30 seconds
-        setInterval(loadCandidates, 30000);
+        // Helper functions
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'new': return 'status-new';
+                case 'reviewed': return 'status-reviewed';
+                case 'interview_scheduled': return 'status-interview';
+                case 'rejected': return 'status-rejected';
+                default: return 'bg-gray-100 text-gray-700';
+            }
+        }
+
+        function formatStatus(status) {
+            return status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        function showEmptyState() {
+            document.getElementById('candidate-tbody').innerHTML = '';
+            document.getElementById('empty-state').classList.remove('hidden');
+        }
+
+        function clearAllFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('work-style-filter').value = '';
+            document.getElementById('motivation-filter').value = '';
+            document.getElementById('time-filter').value = '';
+            document.getElementById('date-filter').value = '';
+            document.querySelectorAll('.status-filter').forEach(cb => cb.checked = true);
+            applyFilters();
+        }
+
+        function updateCandidateStatus(candidateId, newStatus) {
+            const candidate = allCandidates.find(c => c.id === candidateId);
+            if (candidate) {
+                candidate.status = newStatus;
+                
+                // Send to backend
+                fetch(`http://localhost:8000/api/v1/leads/${candidateId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': 'demo_api_key_12345'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                }).catch(console.error);
+                
+                applyFilters();
+                showCandidateDetail(candidateId);
+                showNotification(`Status updated to ${formatStatus(newStatus)}`);
+            }
+        }
+
+        function saveInternalNotes(candidateId) {
+            const notes = document.getElementById(`internal-notes-${candidateId}`).value;
+            const candidate = allCandidates.find(c => c.id === candidateId);
+            if (candidate) {
+                candidate.notes = notes;
+                
+                fetch(`http://localhost:8000/api/v1/leads/${candidateId}/notes`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': 'demo_api_key_12345'
+                    },
+                    body: JSON.stringify({ notes })
+                }).catch(console.error);
+                
+                showNotification('Notes saved');
+            }
+        }
+
+        function contactCandidate(email) {
+            if (email && email !== 'Not provided') {
+                window.open(`mailto:${email}?subject=Northwestern Mutual Opportunity`);
+            } else {
+                showNotification('No email address available');
+            }
+        }
+
+        function exportCandidateData(candidateId) {
+            const candidate = allCandidates.find(c => c.id === candidateId);
+            if (candidate) {
+                const dataStr = JSON.stringify(candidate, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportName = `${candidate.contact.name.replace(/\s+/g, '_')}_assessment_data.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportName);
+                linkElement.click();
+            }
+        }
+
+        function refreshData() {
+            loadCandidates();
+            showNotification('Data refreshed');
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Mock data for demo (ONLY if backend unavailable)
+        function loadMockData() {
+            allCandidates = [
+                {
+                    id: '1',
+                    contact: {
+                        name: 'Emily Davis',
+                        email: 'emily.davis@example.com',
+                        phone: '555-0125',
+                        submittedAt: new Date().toISOString()
+                    },
+                    responses: {
+                        workStyle: 'farmer',
+                        motivation: 'recognition',
+                        clientApproach: 'partner',
+                        learningStyle: 'peer',
+                        challengeResponse: 'collaborate',
+                        strengths: ['Relationship Building', 'Communication', 'Empathy'],
+                        valuesRanking: ['Client Success', 'Team Collaboration', 'Personal Growth'],
+                        scenario: 'emotion'
+                    },
+                    behavior: {
+                        completionTime: 245000,
+                        questionsAnswered: 8,
+                        totalQuestions: 8,
+                        changedAnswers: 2,
+                        hesitations: 1
+                    },
+                    status: 'new',
+                    notes: ''
+                }
+            ];
+            
+            applyFilters();
+            updateStats();
+        }
     </script>
 </body>
 </html>
-
-

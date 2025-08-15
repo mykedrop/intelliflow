@@ -3788,3 +3788,422 @@ Node.js v22.16.0
 🏢 Multi-tenant:   Enabled
 📊 Version:        1.0.0
 ═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  override existing env vars with { override: true }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 observe env with Radar: https://dotenvx.com/radar
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 observe env with Radar: https://dotenvx.com/radar
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 observe env with Radar: https://dotenvx.com/radar
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+[32m[nodemon] restarting due to changes...[39m
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 version env with Radar: https://dotenvx.com/radar
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 version env with Radar: https://dotenvx.com/radar
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  override existing env vars with { override: true }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 📡 observe env with Radar: https://dotenvx.com/radar
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  override existing env vars with { override: true }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+Unhandled error: Error: Not allowed by CORS
+    at origin (/Users/mikeweingarten/Projects/intelliflow/api/server.js:55:21)
+    at /Users/mikeweingarten/Projects/intelliflow/node_modules/cors/lib/index.js:219:13
+    at optionsCallback (/Users/mikeweingarten/Projects/intelliflow/node_modules/cors/lib/index.js:199:9)
+    at corsMiddleware (/Users/mikeweingarten/Projects/intelliflow/node_modules/cors/lib/index.js:204:7)
+    at Layer.handle [as handle_request] (/Users/mikeweingarten/Projects/intelliflow/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/Users/mikeweingarten/Projects/intelliflow/node_modules/express/lib/router/index.js:328:13)
+    at /Users/mikeweingarten/Projects/intelliflow/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/Users/mikeweingarten/Projects/intelliflow/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/mikeweingarten/Projects/intelliflow/node_modules/express/lib/router/index.js:280:10)
+    at urlencodedParser (/Users/mikeweingarten/Projects/intelliflow/node_modules/body-parser/lib/types/urlencoded.js:91:7)
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node api/server.js`[39m
+[dotenv@17.2.1] injecting env (29) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+🚀 OracleBrain Intelligence Platform
+═══════════════════════════════════════
+📡 API Server:     http://localhost:8000
+🔌 WebSocket:      ws://localhost:8001
+🌍 Environment:    development
+🏢 Multi-tenant:   Enabled
+📊 Version:        1.0.0
+═══════════════════════════════════════
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting child process[39m
+[32m[nodemon] starting `node api/server.js`[39m
+node:events:496
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: read EIO
+    at TTY.onStreamRead (node:internal/stream_base_commons:216:20)
+Emitted 'error' event on ReadStream instance at:
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  errno: -5,
+  code: 'EIO',
+  syscall: 'read'
+}
+
+Node.js v22.16.0
