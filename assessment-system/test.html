@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment System Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>Northwestern Mutual Assessment System - Test Page</h1>
+    
+    <div class="test-section">
+        <h2>System Status</h2>
+        <div id="systemStatus">Checking...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Module Loading Test</h2>
+        <div id="moduleTest">Testing modules...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Behavior Tracking Test</h2>
+        <div id="behaviorTest">Testing behavior tracking...</div>
+        <button onclick="testBehaviorTracking()">Test Behavior Tracking</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Question Bank Test</h2>
+        <div id="questionTest">Testing question bank...</div>
+        <button onclick="testQuestionBank()">Test Question Bank</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Assessment Engine Test</h2>
+        <div id="engineTest">Testing assessment engine...</div>
+        <button onclick="testAssessmentEngine()">Test Assessment Engine</button>
+    </div>
+
+    <script>
+        // Test system status
+        function checkSystemStatus() {
+            const statusDiv = document.getElementById('systemStatus');
+            try {
+                if (typeof BehaviorTracker !== 'undefined' && 
+                    typeof QuestionManager !== 'undefined' && 
+                    typeof AdaptiveFlowController !== 'undefined' && 
+                    typeof AnalyticsEngine !== 'undefined' && 
+                    typeof AssessmentEngine !== 'undefined') {
+                    statusDiv.innerHTML = '<span class="success">✅ All modules loaded successfully</span>';
+                    return true;
+                } else {
+                    statusDiv.innerHTML = '<span class="error">❌ Some modules failed to load</span>';
+                    return false;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<span class="error">❌ Error checking system status: ' + error.message + '</span>';
+                return false;
+            }
+        }
+
+        // Test behavior tracking
+        function testBehaviorTracking() {
+            const testDiv = document.getElementById('behaviorTest');
+            try {
+                if (typeof BehaviorTracker !== 'undefined') {
+                    const tracker = new BehaviorTracker();
+                    testDiv.innerHTML = '<span class="success">✅ BehaviorTracker created successfully</span><br>' +
+                                      '<span class="info">Session ID: ' + tracker.sessionId + '</span>';
+                } else {
+                    testDiv.innerHTML = '<span class="error">❌ BehaviorTracker not available</span>';
+                }
+            } catch (error) {
+                testDiv.innerHTML = '<span class="error">❌ Error testing BehaviorTracker: ' + error.message + '</span>';
+            }
+        }
+
+        // Test question bank
+        function testQuestionBank() {
+            const testDiv = document.getElementById('questionTest');
+            try {
+                if (typeof questionBank !== 'undefined' && typeof QuestionManager !== 'undefined') {
+                    const manager = new QuestionManager();
+                    const questionCount = Object.keys(questionBank.psychological).length;
+                    testDiv.innerHTML = '<span class="success">✅ QuestionBank and QuestionManager working</span><br>' +
+                                      '<span class="info">Psychological questions: ' + questionCount + '</span>';
+                } else {
+                    testDiv.innerHTML = '<span class="error">❌ QuestionBank or QuestionManager not available</span>';
+                }
+            } catch (error) {
+                testDiv.innerHTML = '<span class="error">❌ Error testing QuestionBank: ' + error.message + '</span>';
+            }
+        }
+
+        // Test assessment engine
+        function testAssessmentEngine() {
+            const testDiv = document.getElementById('engineTest');
+            try {
+                if (typeof AssessmentEngine !== 'undefined') {
+                    testDiv.innerHTML = '<span class="success">✅ AssessmentEngine available</span><br>' +
+                                      '<span class="info">Ready to initialize assessment system</span>';
+                } else {
+                    testDiv.innerHTML = '<span class="error">❌ AssessmentEngine not available</span>';
+                }
+            } catch (error) {
+                testDiv.innerHTML = '<span class="error">❌ Error testing AssessmentEngine: ' + error.message + '</span>';
+            }
+        }
+
+        // Load modules and run tests
+        window.addEventListener('load', function() {
+            // Wait a bit for modules to load
+            setTimeout(() => {
+                checkSystemStatus();
+            }, 1000);
+        });
+    </script>
+
+    <!-- Load all JavaScript modules -->
+    <script src="frontend/js/behavior-tracker.js"></script>
+    <script src="frontend/js/question-bank.js"></script>
+    <script src="frontend/js/adaptive-flow.js"></script>
+    <script src="frontend/js/analytics.js"></script>
+    <script src="frontend/js/assessment-engine.js"></script>
+</body>
+</html>

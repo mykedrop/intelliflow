@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Northwestern Mutual - Elite Advisor Assessment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --nm-blue: #0033A0;
+            --nm-light-blue: #5B9BD5;
+            --nm-gray: #6C757D;
+            --nm-success: #28A745;
+            --nm-warning: #FFC107;
+            --nm-danger: #DC3545;
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            cursor: none;
+        }
+        
+        /* Custom cursor for tracking */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--nm-blue);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            transition: all 0.1s;
+            z-index: 9999;
+        }
+        
+        .custom-cursor.clicking {
+            transform: scale(0.8);
+            background: rgba(0, 51, 160, 0.1);
+        }
+        
+        /* Confidence meter */
+        .confidence-meter {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            background: white;
+            border-radius: 30px;
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .confidence-bar {
+            width: 40px;
+            height: 200px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(180deg, var(--nm-success) 0%, var(--nm-light-blue) 100%);
+            transition: height 0.5s ease;
+        }
+        
+        /* Typing pattern analyzer */
+        .typing-analyzer {
+            position: absolute;
+            top: -30px;
+            right: 0;
+            font-size: 11px;
+            color: var(--nm-gray);
+        }
+        
+        .typing-speed { color: var(--nm-success); }
+        .typing-deletions { color: var(--nm-warning); }
+        .typing-pauses { color: var(--nm-danger); }
+        
+        /* Question card animations */
+        @keyframes slideInFromRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(91, 155, 213, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(91, 155, 213, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(91, 155, 213, 0); }
+        }
+        
+        .question-card {
+            animation: slideInFromRight 0.5s ease-out;
+        }
+        
+        .priority-item {
+            cursor: grab;
+            transition: all 0.3s;
+        }
+        
+        .priority-item:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+        }
+        
+        .priority-item.dragging {
+            opacity: 0.5;
+        }
+        
+        /* Stress indicator */
+        .stress-indicator {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 50px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stress-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--nm-success);
+            transition: all 0.3s;
+        }
+        
+        .stress-dot.medium { background: var(--nm-warning); }
+        .stress-dot.high { 
+            background: var(--nm-danger); 
+            animation: pulseGlow 1.5s infinite;
+        }
+        
+        /* Hidden iframe for behavior analysis */
+        .behavior-iframe {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Fade in animation */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Ripple effect for clicks */
+        @keyframes rippleEffect {
+            to {
+                transform: translate(-50%, -50%) scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Selected option styling */
+        .option-card.selected {
+            border-color: var(--nm-blue);
+            background-color: #EBF8FF;
+        }
+
+        .option-card.selected .option-radio {
+            border-color: var(--nm-blue);
+            background-color: var(--nm-blue);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" id="customCursor"></div>
+    
+    <!-- Confidence Meter -->
+    <div class="confidence-meter" id="confidenceMeter" style="display: none;">
+        <div class="text-xs text-center mb-2 font-bold text-gray-700">Confidence</div>
+        <div class="confidence-bar">
+            <div class="confidence-fill" id="confidenceFill" style="height: 0%"></div>
+        </div>
+        <div class="text-xs text-center mt-2 font-bold" id="confidenceScore">0%</div>
+    </div>
+    
+    <!-- Stress Indicator -->
+    <div class="stress-indicator" id="stressIndicator" style="display: none;">
+        <span class="text-xs font-bold text-gray-600">Stress Level:</span>
+        <div class="stress-dot" id="stressDot"></div>
+        <span class="text-xs" id="stressLabel">Low</span>
+    </div>
+    
+    <!-- Hidden Behavior Analysis Frame -->
+    <iframe class="behavior-iframe" id="behaviorFrame"></iframe>
+    
+    <!-- Main Container -->
+    <div class="max-w-6xl mx-auto px-6 py-8">
+        <!-- Header -->
+        <header class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Northwestern Mutual</h1>
+                    <p class="text-lg text-gray-600 mt-1">Elite Financial Advisor Assessment</p>
+                </div>
+                <div class="text-right">
+                    <div id="sessionTimer" class="text-sm text-gray-500">Time: 00:00</div>
+                    <div id="questionCounter" class="text-xs text-gray-400 mt-1">Question 0 of 0</div>
+                </div>
+            </div>
+            
+            <!-- Advanced Progress Bar -->
+            <div class="mt-6">
+                <div class="flex justify-between text-xs text-gray-500 mb-2">
+                    <span>Progress</span>
+                    <span id="progressPercentage">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2 relative">
+                    <div id="progressBar" class="absolute left-0 top-0 h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"></div>
+                    <div id="confidenceMarkers" class="absolute top-0 w-full h-full"></div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Assessment Container -->
+        <div id="assessmentContainer">
+            <!-- Phase 1: Contact Information -->
+            <div id="contactPhase" class="bg-white rounded-2xl shadow-lg p-10">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Let's Start With Your Information</h2>
+                
+                <form id="contactForm" class="space-y-6">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">First Name *</label>
+                            <input type="text" id="firstName" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <div class="typing-analyzer" id="firstNameAnalyzer"></div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name *</label>
+                            <input type="text" id="lastName" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <div class="typing-analyzer" id="lastNameAnalyzer"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                        <input type="email" id="email" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <div class="typing-analyzer" id="emailAnalyzer"></div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
+                        <input type="tel" id="phone" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">LinkedIn Profile</label>
+                        <input type="url" id="linkedin" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="https://linkedin.com/in/yourprofile">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Years of Experience in Financial Services</label>
+                        <select id="experience" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Select...</option>
+                            <option value="0-1">Less than 1 year</option>
+                            <option value="1-3">1-3 years</option>
+                            <option value="3-5">3-5 years</option>
+                            <option value="5-10">5-10 years</option>
+                            <option value="10+">10+ years</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-8 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold text-lg">
+                        Begin Assessment →
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Phase 2: Core Assessment -->
+            <div id="assessmentPhase" style="display: none;">
+                <!-- Questions will be dynamically inserted here -->
+            </div>
+            
+            <!-- Phase 3: Day-in-Life Simulation -->
+            <div id="simulationPhase" style="display: none;">
+                <!-- Simulation interface will be dynamically inserted here -->
+            </div>
+            
+            <!-- Phase 4: Results -->
+            <div id="resultsPhase" style="display: none;">
+                <!-- Results will be dynamically displayed here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load all JavaScript modules -->
+    <script src="js/behavior-tracker.js"></script>
+    <script src="js/question-bank.js"></script>
+    <script src="js/adaptive-flow.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/assessment-engine.js"></script>
+</body>
+</html>
