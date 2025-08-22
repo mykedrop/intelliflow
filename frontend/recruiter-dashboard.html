@@ -12,10 +12,23 @@
         .card-shadow { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
         .stat-card { transition: all 0.2s ease-in-out; }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-        .tier-elite { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
+        .tier-elite { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
         .tier-high { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
         .tier-solid { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
         .tier-developing { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); }
+        .candidate-card { transition: all 0.2s ease-in-out; border-left-width: 4px; }
+        .candidate-card:hover { transform: translateY(-1px); box-shadow: 0 10px 20px -10px rgba(0,0,0,0.15); }
+        .border-elite { border-left-color: #7c3aed; background: #f5f3ff; }
+        .border-high { border-left-color: #10b981; background: #f0fdf4; }
+        .border-solid { border-left-color: #3b82f6; background: #eff6ff; }
+        .status-badge { padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
+        .status-new { background: #e0e7ff; color: #3730a3; }
+        .status-reviewed { background: #e5e7eb; color: #374151; }
+        .status-interview { background: #dcfce7; color: #065f46; }
+        .slide-panel { transition: transform 0.3s ease; }
+        .slide-panel.open { transform: translateX(0); }
+        .progress-track { height: 6px; background: #e5e7eb; border-radius: 9999px; }
+        .progress-bar { height: 6px; border-radius: 9999px; background: linear-gradient(90deg, #3b82f6, #2563eb); }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
@@ -38,56 +51,56 @@
     <div class="max-w-7xl mx-auto px-6 py-12">
         <!-- Stats Overview -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="stat-card bg-white rounded-2xl card-shadow p-6 border border-gray-100">
+            <div class="stat-card bg-white rounded-xl card-shadow p-5 border border-gray-100">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                     </div>
-                    <div class="ml-4">
+                    <div class="ml-3">
                         <p class="text-sm font-medium text-gray-600">Total Candidates</p>
                         <p id="total-candidates" class="text-2xl font-bold text-gray-900">-</p>
                     </div>
                 </div>
             </div>
 
-            <div class="stat-card bg-white rounded-2xl card-shadow p-6 border border-gray-100">
+            <div class="stat-card bg-white rounded-xl card-shadow p-5 border border-gray-100">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                    <div class="flex-shrink-0 w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
                         <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
                         </svg>
                     </div>
-                    <div class="ml-4">
+                    <div class="ml-3">
                         <p class="text-sm font-medium text-gray-600">ELITE Tier</p>
                         <p id="elite-count" class="text-2xl font-bold text-gray-900">-</p>
                     </div>
                 </div>
             </div>
 
-            <div class="stat-card bg-white rounded-2xl card-shadow p-6 border border-gray-100">
+            <div class="stat-card bg-white rounded-xl card-shadow p-5 border border-gray-100">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                         <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                         </svg>
                     </div>
-                    <div class="ml-4">
+                    <div class="ml-3">
                         <p class="text-sm font-medium text-gray-600">High Potential</p>
                         <p id="high-potential-count" class="text-2xl font-bold text-gray-900">-</p>
                     </div>
                 </div>
             </div>
 
-            <div class="stat-card bg-white rounded-2xl card-shadow p-6 border border-gray-100">
+            <div class="stat-card bg-white rounded-xl card-shadow p-5 border border-gray-100">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <div class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                     </div>
-                    <div class="ml-4">
+                    <div class="ml-3">
                         <p class="text-sm font-medium text-gray-600">Avg Score</p>
                         <p id="avg-score" class="text-2xl font-bold text-gray-900">-</p>
                     </div>
@@ -95,73 +108,121 @@
             </div>
         </div>
 
-        <!-- Search and Filters -->
-        <div class="bg-white rounded-2xl card-shadow p-6 mb-8 border border-gray-100">
-            <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div class="flex-1 max-w-md">
-                    <label for="search" class="sr-only">Search candidates</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
+        <!-- Layout: Sidebar + Content -->
+        <div class="grid grid-cols-12 gap-6 mb-8">
+            <!-- Sidebar Filters -->
+            <aside class="col-span-12 lg:col-span-3">
+                <div class="bg-white rounded-2xl card-shadow p-5 border border-gray-100 space-y-6">
+                    <!-- Search -->
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">Search Candidates</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <input id="search-input" type="text" placeholder="Name or email..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
-                        <input type="text" id="search" placeholder="Search by name or email..." 
-                               class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Tier -->
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">Tier</label>
+                        <select id="tier-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <option value="">All Tiers</option>
+                            <option value="ELITE">ELITE</option>
+                            <option value="HIGH_POTENTIAL">HIGH_POTENTIAL</option>
+                            <option value="SOLID">SOLID</option>
+                            <option value="DEVELOPING">DEVELOPING</option>
+                        </select>
+                    </div>
+
+                    <!-- Work Style -->
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">Work Style</label>
+                        <select id="work-style-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <option value="">All</option>
+                            <option value="hunter">Hunter</option>
+                            <option value="farmer">Farmer</option>
+                            <option value="analyst">Analyst</option>
+                            <option value="coach">Coach</option>
+                        </select>
+                    </div>
+
+                    <!-- Motivation -->
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">Motivation</label>
+                        <select id="motivation-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <option value="">All</option>
+                            <option value="achievement">Achievement</option>
+                            <option value="recognition">Recognition</option>
+                            <option value="impact">Impact</option>
+                            <option value="growth">Growth</option>
+                            <option value="autonomy">Autonomy</option>
+                            <option value="stability">Stability</option>
+                        </select>
+                    </div>
+
+                    <!-- Status -->
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">Status</label>
+                        <div class="space-y-2 text-sm">
+                            <label class="flex items-center"><input type="checkbox" class="status-filter mr-2" value="new" checked> New</label>
+                            <label class="flex items-center"><input type="checkbox" class="status-filter mr-2" value="reviewed"> Reviewed</label>
+                            <label class="flex items-center"><input type="checkbox" class="status-filter mr-2" value="interview_scheduled"> Interview Scheduled</label>
+                        </div>
+                    </div>
+
+                    <!-- Date -->
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 mb-2 block">Submitted After</label>
+                        <input id="date-filter" type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <button id="clear-filters" class="text-sm text-gray-600 hover:text-gray-900">Clear Filters</button>
+                        <button onclick="loadCandidates()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">Refresh</button>
                     </div>
                 </div>
-                <div class="flex gap-3">
-                    <select id="tier-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">All Tiers</option>
-                        <option value="ELITE">ELITE</option>
-                        <option value="HIGH_POTENTIAL">HIGH_POTENTIAL</option>
-                        <option value="SOLID">SOLID</option>
-                        <option value="DEVELOPING">DEVELOPING</option>
-                    </select>
-                    <button onclick="loadCandidates()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                        Refresh
-                    </button>
+            </aside>
+
+            <!-- Content: Cards + Detail -->
+            <section class="col-span-12 lg:col-span-9">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="lg:col-span-2 space-y-3">
+                        <div class="flex flex-wrap gap-2 mb-1 text-sm" id="stage-nav">
+                            <button data-stage="all" class="px-3 py-1 rounded-full border bg-white text-gray-700 hover:bg-gray-50 stage-chip active">All</button>
+                            <button data-stage="new" class="px-3 py-1 rounded-full border bg-white text-gray-700 hover:bg-gray-50 stage-chip">New</button>
+                            <button data-stage="interview_scheduled" class="px-3 py-1 rounded-full border bg-white text-gray-700 hover:bg-gray-50 stage-chip">Upcoming Interview</button>
+                            <button data-stage="interviewed" class="px-3 py-1 rounded-full border bg-white text-gray-700 hover:bg-gray-50 stage-chip">Interviewed</button>
+                            <button data-stage="hired" class="px-3 py-1 rounded-full border bg-white text-gray-700 hover:bg-gray-50 stage-chip">Hired</button>
+                            <button data-stage="rejected" class="px-3 py-1 rounded-full border bg-white text-gray-700 hover:bg-gray-50 stage-chip">Rejected</button>
+                        </div>
+                        <div id="candidate-cards" class="space-y-3"></div>
+                    </div>
+                    <div id="detail-panel" class="bg-white rounded-2xl card-shadow border border-gray-100 p-6 h-max sticky top-8 hidden">
+                        <div id="detail-content"></div>
+                    </div>
                 </div>
+            </section>
+        </div>
+
+        <!-- Pipeline Kanban -->
+        <div class="mt-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Pipeline</h3>
+            <div id="kanban" class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
+                <!-- lanes rendered via JS -->
             </div>
         </div>
 
-        <!-- Candidates Table -->
-        <div class="bg-white rounded-2xl card-shadow border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-900">Candidate Intelligence</h3>
-                <p class="text-sm text-gray-600">Real-time assessment results and behavioral insights</p>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tier</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AI Insights</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="candidates-table" class="bg-white divide-y divide-gray-200">
-                        <!-- Candidates will be dynamically inserted here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Benchmarks Section -->
-        <div class="mt-8 bg-white rounded-2xl card-shadow p-6 border border-gray-100">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Performance Benchmarks</h3>
-            <div id="benchmarks-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Benchmark data will be dynamically inserted here -->
-            </div>
-        </div>
+        
     </div>
 
     <script>
     const API_KEY = 'demo_api_key_12345';
     const API_BASE = 'http://localhost:8000';
+    let CURRENT_CANDIDATES = [];
 
     // WebSocket connection for real-time updates
     const ws = new WebSocket('ws://localhost:8001');
@@ -173,7 +234,7 @@
     ws.onmessage = function(event) {
         console.log('WebSocket message received:', event.data);
         loadCandidates();
-        loadBenchmarks();
+        // loadBenchmarks removed with benchmarks section
     };
 
     async function loadCandidates() {
@@ -183,10 +244,37 @@
                     'x-api-key': API_KEY
                 }
             });
-            const candidates = await response.json();
-            
+            const json = await response.json();
+            const leads = (json && Array.isArray(json)) ? json : (json?.leads || []);
+
+            // Normalize API leads -> UI candidate shape expected by renderer
+            const candidates = leads.map(l => {
+                const resp = l.responses || {};
+                const contact = resp.contact_info || {};
+                const results = l.results || {};
+                return {
+                    id: l.id,
+                    first_name: contact.first_name || '',
+                    last_name: contact.last_name || '',
+                    email: contact.email || '',
+                    phone: contact.phone || '',
+                    company: l.company || '',
+                    job_title: l.job_title || '',
+                    final_score: results.totalScore ?? l.final_score ?? null,
+                    tier: results.tier || l.tier || '',
+                    status: l.status || 'new',
+                    created_at: l.created_at,
+                    work_style: resp.work_style || '',
+                    motivation: resp.motivation || '',
+                    client_approach: resp.client_approach || '',
+                    top_strengths: Array.isArray(resp.strengths) ? resp.strengths : []
+                };
+            });
+
+            CURRENT_CANDIDATES = candidates;
             updateStats(candidates);
-            renderCandidatesTable(candidates);
+            renderCandidateCards(candidates);
+            renderKanban(candidates);
         } catch (error) {
             console.error('Failed to load candidates:', error);
         }
@@ -196,8 +284,8 @@
         const total = candidates.length;
         const elite = candidates.filter(c => c.tier === 'ELITE').length;
         const highPotential = candidates.filter(c => c.tier === 'HIGH_POTENTIAL').length;
-        const avgScore = candidates.length > 0 ? 
-            Math.round(candidates.reduce((sum, c) => sum + (c.final_score || 0), 0) / candidates.length) : 0;
+        const scored = candidates.filter(c => typeof c.final_score === 'number');
+        const avgScore = scored.length > 0 ? Math.round(scored.reduce((s, c) => s + c.final_score, 0) / scored.length) : 0;
 
         document.getElementById('total-candidates').textContent = total;
         document.getElementById('elite-count').textContent = elite;
@@ -205,10 +293,15 @@
         document.getElementById('avg-score').textContent = avgScore;
     }
 
-    function renderCandidatesTable(candidates) {
-        const tbody = document.getElementById('candidates-table');
-        const searchTerm = document.getElementById('search').value.toLowerCase();
+    function renderCandidateCards(candidates) {
+        const list = document.getElementById('candidate-cards');
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
         const tierFilter = document.getElementById('tier-filter').value;
+        const workStyle = document.getElementById('work-style-filter').value;
+        const motivation = document.getElementById('motivation-filter').value;
+        const dateFilter = document.getElementById('date-filter').value;
+        const selectedStatuses = Array.from(document.querySelectorAll('.status-filter:checked')).map(cb => cb.value);
+        const activeStage = document.querySelector('#stage-nav .stage-chip.active')?.getAttribute('data-stage') || 'all';
 
         let filteredCandidates = candidates.filter(candidate => {
             const matchesSearch = !searchTerm || 
@@ -217,54 +310,175 @@
                 (candidate.email && candidate.email.toLowerCase().includes(searchTerm));
             
             const matchesTier = !tierFilter || candidate.tier === tierFilter;
-            
-            return matchesSearch && matchesTier;
+            const matchesWork = !workStyle || (candidate.work_style||'') === workStyle;
+            const matchesMotivation = !motivation || (candidate.motivation||'') === motivation;
+            const matchesStatus = activeStage === 'all' ? (selectedStatuses.length === 0 || selectedStatuses.includes((candidate.status||'new'))) : true;
+            const matchesStage = activeStage === 'all' || (candidate.status||'new') === activeStage;
+            const matchesDate = !dateFilter || (candidate.created_at && new Date(candidate.created_at).toISOString().split('T')[0] >= dateFilter);
+
+            return matchesSearch && matchesTier && matchesWork && matchesMotivation && matchesStatus && matchesStage && matchesDate;
         });
 
-        tbody.innerHTML = filteredCandidates.map(candidate => `
-            <tr class="hover:bg-gray-50 transition-colors">
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span class="text-sm font-medium text-blue-600">
-                                ${(candidate.first_name || 'N')[0]}${(candidate.last_name || 'A')[0]}
-                            </span>
-                        </div>
-                        <div class="ml-4">
-                            <div class="text-sm font-medium text-gray-900">
-                                ${candidate.first_name || 'N/A'} ${candidate.last_name || 'N/A'}
+        list.innerHTML = filteredCandidates.map(c => {
+            const initials = `${(c.first_name||'N')[0]}${(c.last_name||'A')[0]}`;
+            const tier = c.tier || 'SOLID';
+            const borderClass = tier === 'ELITE' ? 'border-elite' : tier === 'HIGH_POTENTIAL' ? 'border-high' : 'border-solid';
+            const score = c.final_score ?? '—';
+            const status = (c.status || 'new').replace(/_/g,' ');
+            return `
+            <div class="candidate-card ${borderClass} rounded-2xl border border-gray-200 p-6 cursor-pointer" onclick="showDetail(${JSON.stringify(c).replace(/\"/g,'&quot;')})" data-candidate-id="${c.id}">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-start gap-4">
+                        <div class="w-11 h-11 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-semibold mt-0.5">${initials}</div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-base font-semibold text-gray-900">${c.first_name||'N/A'} ${c.last_name||'N/A'}</h4>
+                                <span class="status-badge ${c.status==='reviewed'?'status-reviewed':c.status==='interview_scheduled'?'status-interview':'status-new'}">${status}</span>
                             </div>
-                            <div class="text-sm text-gray-500">
-                                ${candidate.company || 'No company'} • ${candidate.job_title || 'No title'}
+                            <div class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-600">
+                                <span>📧 ${c.email||'N/A'}</span>
+                                <span>📱 ${c.phone||'—'}</span>
+                                <span>🗓 ${new Date(c.created_at||Date.now()).toLocaleDateString()}</span>
                             </div>
                         </div>
                     </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">${candidate.email || 'N/A'}</div>
-                    <div class="text-sm text-gray-500">${candidate.phone || 'No phone'}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-semibold text-gray-900">${candidate.final_score || 'N/A'}</div>
-                    <div class="text-xs text-gray-500">/ 100</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full text-white ${getTierClass(candidate.tier)}">
-                        ${candidate.tier || 'N/A'}
-                    </span>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="text-sm text-gray-900">
-                        ${getAIInsights(candidate.ai_insights)}
+                    <div class="text-right">
+                        <div class="text-3xl font-bold text-gray-900 leading-none">${score}</div>
+                        <div class="text-[11px] uppercase tracking-wide text-gray-600 mt-1">${tier.replace('_',' ')}</div>
                     </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button class="text-blue-600 hover:text-blue-900 mr-3">View Details</button>
-                    <button class="text-green-600 hover:text-green-900">Contact</button>
-                </td>
-            </tr>
-        `).join('');
+                </div>
+                <div class="mt-4 grid grid-cols-3 gap-6 text-[13px]">
+                    <div>
+                        <div class="text-gray-500">Work Style</div>
+                        <div class="font-medium">${capitalize(c.work_style)||'—'}</div>
+                    </div>
+                    <div>
+                        <div class="text-gray-500">Motivation</div>
+                        <div class="font-medium">${capitalize(c.motivation)||'—'}</div>
+                    </div>
+                    <div>
+                        <div class="text-gray-500">Top Strengths</div>
+                        <div class="font-medium">${Array.isArray(c.top_strengths)?c.top_strengths.slice(0,2).join(', '):'—'}</div>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
     }
+
+    // Focus candidate from Kanban
+    function focusCandidate(id){
+        // ensure the list is rendered with the current filter before searching
+        if (!document.querySelector(`[data-candidate-id="${id}"]`)) {
+            renderCandidateCards(CURRENT_CANDIDATES || []);
+        }
+        const card = document.querySelector(`[data-candidate-id="${id}"]`);
+        if(card){
+            card.scrollIntoView({behavior:'smooth', block:'center'});
+            card.classList.add('ring-2','ring-blue-400');
+            setTimeout(()=> card.classList.remove('ring-2','ring-blue-400'), 1200);
+            // also open detail
+            const candidate = (CURRENT_CANDIDATES||[]).find(c=>c.id===id);
+            if(candidate){ showDetail(candidate); }
+        } else {
+            // fallback: switch stage filter to the candidate's status and re-render
+            const cand = (CURRENT_CANDIDATES||[]).find(c=>c.id===id);
+            if(cand){
+                const chip = document.querySelector(`#stage-nav .stage-chip[data-stage="${cand.status||'new'}"]`);
+                if(chip){ chip.click(); }
+                setTimeout(()=> focusCandidate(id), 50);
+            }
+        }
+    }
+
+    // --- Kanban ---
+    const LANES = [
+        { key: 'new', label: 'New' },
+        { key: 'interview_scheduled', label: 'Upcoming Interview' },
+        { key: 'interviewed', label: 'Interviewed' },
+        { key: 'hired', label: 'Hired' },
+        { key: 'rejected', label: 'Rejected' },
+    ];
+
+    function renderKanban(candidates){
+        const container = document.getElementById('kanban');
+        const byStatus = Object.fromEntries(LANES.map(l=>[l.key,[]]));
+        candidates.forEach(c=>{
+            const s = c.status || 'new';
+            if(!byStatus[s]) byStatus[s] = [];
+            byStatus[s].push(c);
+        });
+
+        container.innerHTML = LANES.map(lane => {
+            const items = (byStatus[lane.key]||[]).map(c => kanbanCard(c)).join('');
+            return `
+            <div class="bg-white rounded-xl border border-gray-200 p-3">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-sm font-semibold text-gray-800">${lane.label}</div>
+                    <div class="text-xs text-gray-500">${(byStatus[lane.key]||[]).length}</div>
+                </div>
+                <div class="space-y-2 min-h-[180px] max-h-[340px] overflow-y-auto pr-1" data-lane="${lane.key}">
+                    ${items || ''}
+                </div>
+            </div>`;
+        }).join('');
+
+        // attach DnD listeners programmatically for reliability
+        LANES.forEach(l => {
+            const el = container.querySelector(`[data-lane="${l.key}"]`);
+            if(!el) return;
+            el.addEventListener('dragover', (e)=>{ e.preventDefault(); if(e.dataTransfer) e.dataTransfer.dropEffect='move'; });
+            el.addEventListener('drop', (e)=> onDrop(e, l.key));
+        });
+    }
+
+    function kanbanCard(c){
+        const initials = `${(c.first_name||'N')[0]}${(c.last_name||'A')[0]}`;
+        const score = c.final_score ?? '—';
+        return `
+        <div class="rounded-lg border border-gray-200 p-2.5 hover:bg-gray-50 cursor-move group" draggable="true" ondragstart="onDragStart(event, '${c.id}')" onclick="focusCandidate('${c.id}')">
+            <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <div class="w-7 h-7 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-[11px] font-semibold">${initials}</div>
+                    <div class="min-w-0">
+                        <div class="text-sm font-medium text-gray-900 truncate" title="${c.first_name||''} ${c.last_name||''}">${c.first_name||'N/A'} ${c.last_name||''}</div>
+                        <div class="text-[11px] text-gray-500 truncate" title="${c.email||''}">${c.email||''}</div>
+                    </div>
+                </div>
+                <div class="text-sm text-gray-700 font-semibold flex-shrink-0">${score}</div>
+            </div>
+            <div class="mt-2 flex items-center justify-end opacity-90 group-hover:opacity-100">
+                ${quickActions(c)}
+            </div>
+        </div>`;
+    }
+
+    function quickActions(c){
+        const s = c.status||'new';
+        const btn = (label, next) => `<button class="px-2 py-0.5 rounded border text-[11px] text-gray-700 hover:bg-gray-100" onclick=\"updateStatus(event, '${c.id}', '${next}')\">${label}</button>`;
+        if(s==='new') return btn('Schedule', 'interview_scheduled');
+        if(s==='interview_scheduled') return btn('Interviewed', 'interviewed');
+        if(s==='interviewed') return btn('Hire', 'hired');
+        if(s==='rejected') return btn('Reopen', 'new');
+        if(s==='hired') return btn('Reopen', 'interviewed');
+        return '';
+    }
+
+    let dragLeadId = null;
+    function onDragStart(e, id){ dragLeadId = id; try{ e.dataTransfer.setData('text/plain', id); e.dataTransfer.effectAllowed='move'; }catch(_){} }
+    async function onDrop(e, lane){ e.preventDefault(); const droppedId = dragLeadId || (e.dataTransfer && e.dataTransfer.getData('text/plain')); if(!droppedId) return; await updateStatus(e, droppedId, lane); dragLeadId = null; }
+
+    async function updateStatus(event, id, status){
+        if(event) event.stopPropagation();
+        try{
+            await fetch(`${API_BASE}/api/leads/${id}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
+                body: JSON.stringify({ status })
+            });
+            await loadCandidates();
+        }catch(err){ console.error('Failed to update status', err); }
+    }
+    function capitalize(s){ if(!s) return s; return String(s).charAt(0).toUpperCase()+String(s).slice(1); }
 
     function getTierClass(tier) {
         switch(tier) {
@@ -276,62 +490,88 @@
         }
     }
 
-    function getAIInsights(aiInsights) {
-        if (!aiInsights) return 'No insights available';
-        
-        try {
-            const insights = typeof aiInsights === 'string' ? JSON.parse(aiInsights) : aiInsights;
-            if (insights.percentile) {
-                return `Top ${100 - Math.round(insights.percentile)}% • ${insights.recommendations ? insights.recommendations[0] : 'Strong candidate'}`;
-            }
-            return 'Analysis in progress';
-        } catch (e) {
-            return 'Insights available';
-        }
+    function getAIInsights() { return ''; }
+
+    function showDetail(candidate) {
+        const panel = document.getElementById('detail-panel');
+        const c = typeof candidate === 'string' ? JSON.parse(candidate) : candidate;
+        const strengths = Array.isArray(c.top_strengths)?c.top_strengths:[];
+        panel.classList.remove('hidden');
+        document.getElementById('detail-content').innerHTML = `
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <div class="text-sm text-gray-500">${c.email||'N/A'} • ${c.phone||'—'}</div>
+                    <h3 class="text-xl font-bold text-gray-900">${c.first_name||'N/A'} ${c.last_name||'N/A'}</h3>
+                </div>
+                <button class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('detail-panel').classList.add('hidden')">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="rounded-xl p-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white mb-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-blue-100 text-xs">Overall Score</div>
+                        <div class="text-3xl font-extrabold">${c.final_score ?? '—'}/100</div>
+                    </div>
+                    <div class="text-xs bg-white/20 px-3 py-1 rounded-full uppercase font-semibold">${c.tier||'—'}</div>
+                </div>
+            </div>
+            <div class="space-y-3 mb-6">
+                ${['cultural Fit','sales Potential','leadership Potential','retention Likelihood','coachability'].map(label=>`
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-600"><span>${label}</span></div>
+                        <div class="progress-track mt-1"><div class="progress-bar" style="width:${(c.final_score||0)}%"></div></div>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                <h4 class="font-semibold text-gray-900 mb-2">Candidate Profile</h4>
+                <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div><span class="text-gray-600">Work Style:</span> <span class="font-medium ml-1">${c.work_style||'—'}</span></div>
+                    <div><span class="text-gray-600">Motivation:</span> <span class="font-medium ml-1">${c.motivation||'—'}</span></div>
+                    <div><span class="text-gray-600">Client Approach:</span> <span class="font-medium ml-1">${c.client_approach||'—'}</span></div>
+                </div>
+            </div>
+            ${strengths.length?`<div class="mb-4"><h4 class="font-semibold text-gray-900 mb-2">Key Strengths</h4>${strengths.map(s=>`<div class="text-sm text-gray-700">✓ ${s}</div>`).join('')}</div>`:''}
+            <div class="space-y-2">
+                <button class="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Schedule Interview</button>
+                <button class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Mark as Reviewed</button>
+            </div>
+        `;
+        window.scrollTo({top:0, behavior:'smooth'});
     }
 
-    async function loadBenchmarks() {
-        try {
-            const response = await fetch(`${API_BASE}/api/enhanced-assessment/benchmarks`, {
-                headers: {
-                    'x-api-key': API_KEY
-                }
-            });
-            const benchmarks = await response.json();
-            
-            renderBenchmarks(benchmarks);
-        } catch (error) {
-            console.error('Failed to load benchmarks:', error);
-        }
-    }
-
-    function renderBenchmarks(benchmarks) {
-        const container = document.getElementById('benchmarks-container');
-        
-        if (benchmarks.distribution && benchmarks.distribution.length > 0) {
-            container.innerHTML = benchmarks.distribution.map(bucket => `
-                <div class="bg-gray-50 rounded-xl p-4">
-                    <div class="text-sm font-medium text-gray-600">Score ${bucket.bucket * 10 - 9}-${bucket.bucket * 10}</div>
-                    <div class="text-2xl font-bold text-gray-900">${bucket.count}</div>
-                    <div class="text-sm text-gray-500">Avg: ${Math.round(bucket.avg_score)}</div>
-                </div>
-            `).join('');
-        } else {
-            container.innerHTML = `
-                <div class="col-span-3 text-center py-8 text-gray-500">
-                    <p>Benchmark data will appear as more candidates complete assessments</p>
-                </div>
-            `;
-        }
-    }
+    // Benchmarks removed
 
     // Event listeners
-    document.getElementById('search').addEventListener('input', loadCandidates);
+    // Sidebar filters
+    document.getElementById('search-input').addEventListener('input', loadCandidates);
     document.getElementById('tier-filter').addEventListener('change', loadCandidates);
+    document.getElementById('work-style-filter').addEventListener('change', loadCandidates);
+    document.getElementById('motivation-filter').addEventListener('change', loadCandidates);
+    document.getElementById('date-filter').addEventListener('change', loadCandidates);
+    document.querySelectorAll('.status-filter').forEach(cb => cb.addEventListener('change', loadCandidates));
+    document.getElementById('clear-filters').addEventListener('click', () => {
+        document.getElementById('search-input').value = '';
+        document.getElementById('tier-filter').value = '';
+        document.getElementById('work-style-filter').value = '';
+        document.getElementById('motivation-filter').value = '';
+        document.getElementById('date-filter').value = '';
+        document.querySelectorAll('.status-filter').forEach(cb => cb.checked = true);
+        loadCandidates();
+    });
+
+    // Stage navigation
+    document.getElementById('stage-nav').addEventListener('click', (e)=>{
+        const btn = e.target.closest('.stage-chip');
+        if(!btn) return;
+        document.querySelectorAll('#stage-nav .stage-chip').forEach(b=>b.classList.remove('active','bg-blue-50','border-blue-300'));
+        btn.classList.add('active','bg-blue-50','border-blue-300');
+        loadCandidates();
+    });
 
     // Initial load
     loadCandidates();
-    loadBenchmarks();
     </script>
 </body>
 </html>
