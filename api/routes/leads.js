@@ -39,17 +39,21 @@ router.get('/', async (req, res) => {
                 [req.tenant.id]
             );
             transformedLeads = result.rows.map(lead => {
-                const payload = lead.payload || {};
-                const responses = payload.responses || {};
-                const results = payload.results || {};
+                // Prefer structured DB columns; fall back to any legacy payload shape
+                const responses = lead.responses || (lead.payload && lead.payload.responses) || {};
+                const results = lead.raw_scores || (lead.payload && lead.payload.results) || {};
+                const behavioralData = lead.behavioral_data || (lead.payload && lead.payload.behavioral_data) || {};
                 return {
                     id: lead.id,
                     tenant_id: lead.tenant_id,
                     created_at: lead.created_at,
                     status: lead.status || 'new',
+                    // expose DB columns so frontend can render scores/tiers directly
+                    final_score: lead.final_score ?? null,
+                    tier: lead.tier || null,
                     responses,
                     results,
-                    behavioral_data: payload.behavioral_data || {}
+                    behavioral_data: behavioralData
                 };
             });
         } catch (_dbErr) {

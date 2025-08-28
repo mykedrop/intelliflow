@@ -48,7 +48,12 @@ app.use(express.urlencoded({ extended: true }));
 // CORS
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
+    // Allow same-origin/no origin (e.g., curl) and 'null' origin from file:// contexts
+    if (!origin || origin === 'null') return callback(null, true);
+    // Allow localhost dev origins broadly in development
+    if (NODE_ENV === 'development' && (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1'))) {
+      return callback(null, true);
+    }
     if (CORS_ORIGINS.length === 0 || CORS_ORIGINS.includes(origin)) {
       return callback(null, true);
     }
